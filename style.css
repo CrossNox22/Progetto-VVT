@@ -1396,3 +1396,64 @@ input {
 .statblock-card button { border-color: #922610; color: #333; background: #ebdcc2; }
 .statblock-card button:hover { background: #d4c4a9; }
 .statblock-card button.btn-del { background: #ffcccc; color: red; border-color: red; }
+
+/* --- INVENTORY STATBLOCK STYLE --- */
+.statblock-card .inv-row {
+    border-bottom: 1px solid #922610; /* Linea rossa solida */
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.statblock-card .inv-name {
+    color: #000;
+    font-weight: bold;
+    font-family: 'Segoe UI', sans-serif;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+}
+
+.statblock-card .inv-qty {
+    color: #922610; /* Rosso scuro per la quantità */
+    font-weight: bold;
+    background: transparent;
+    border: none;
+    text-align: center;
+}
+
+.statblock-card .inv-qty:focus, 
+.statblock-card .inv-name:focus {
+    outline: none;
+    background: rgba(0,0,0,0.05);
+    border-radius: 3px;
+}
+
+/* --- SPELLBOOK STATBLOCK STYLE --- */
+.statblock-card .spell-row {
+    border-bottom: 1px solid #922610; /* Linea rossa solida */
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.statblock-card .spell-name {
+    color: #000;
+    font-weight: normal; /* Non grassetto */
+    font-family: 'Segoe UI', sans-serif;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    width: 80px;
+}
+
+.statblock-card .spell-circle {
+    border-color: #555; /* Bordo più scuro per contrasto */
+    background-color: rgba(255,255,255,0.5); /* Sfondo pallini vuoti */
+}
+
+.statblock-card .spell-circle.used {
+    background-color: #922610; /* Colore viola quando usato */
+    border-color: #7a200d;
+}
