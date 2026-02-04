@@ -1,9 +1,9 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #1a1a1a;
-    font-family: 'Segoe UI', sans-serif;
-    color: white;
+    background-color: #101010; /* Sfondo scuro per far risaltare la mappa */
+    font-family: 'Georgia', 'Times New Roman', serif; /* Font stile D&D */
+    color: #333; /* Testo scuro */
     user-select: none;
     transition: background-color 3s ease;
 }
@@ -11,40 +11,52 @@ body {
 /* TOOLBAR */
 #toolbar {
     height: 60px;
-    background-color: #2a2a2a;
+    background-color: #fdf1dc; /* Crema Pergamena */
     display: flex;
     align-items: center;
     padding: 0 20px;
-    border-bottom: 3px solid #FF9800;
+    border-bottom: 3px solid #922610; /* Rosso D&D */
     z-index: 2000;
     position: relative;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* Aggiungi questo per colorare il Titolo */
+#toolbar strong {
+    color: #922610 !important;
+    font-variant: small-caps;
+    font-size: 1.4em !important;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
 }
 
 button {
-    background-color: #444;
-    color: white;
-    border: 1px solid #666;
-    padding: 8px 12px;
+    background-color: #ebdcc2; /* Beige scuro */
+    color: #333; /* Testo scuro */
+    border: 1px solid #922610; /* Bordo Rosso */
+    padding: 6px 12px;
     border-radius: 4px;
     margin-right: 8px;
     cursor: pointer;
     font-weight: bold;
+    font-family: 'Georgia', serif; /* Font D&D */
     font-size: 13px;
     display: flex;
     align-items: center;
     gap: 5px;
     transition: 0.2s;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
 }
 
 button:hover {
-    background-color: #555;
+    background-color: #d4c4a9; /* Più scuro al passaggio */
+    transform: translateY(-1px);
 }
 
+/* Modifica specifica per il pulsante Primario (Arancione -> Rosso Scuro) */
 button.primary {
-    background-color: #FF9800;
-    color: #000;
-    border: none;
+    background-color: #922610;
+    color: #fdf1dc;
+    border: 1px solid #5a1205;
 }
 
 button.save-session {
@@ -423,15 +435,16 @@ button.danger {
 .floating-panel {
     position: absolute;
     top: 70px;
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid #FF9800;
-    border-radius: 8px;
+    background: #fdf1dc; /* Crema */
+    border: 2px solid #922610; /* Rosso */
+    border-radius: 4px;
     padding: 15px;
     z-index: 1800;
     text-align: center;
     display: none;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     width: 250px;
+    color: #333; /* Testo scuro importante */
 }
 
 #clock-panel {
@@ -451,14 +464,16 @@ button.danger {
 .clock-time {
     font-size: 24px;
     font-weight: bold;
-    color: #FF9800;
+    color: #922610;
     margin-bottom: 5px;
+    font-family: 'Courier New', monospace;
 }
 
 .clock-day {
     font-size: 14px;
-    color: #aaa;
+    color: #555;
     margin-bottom: 8px;
+    font-style: italic;
 }
 
 .moon-row {
@@ -1046,22 +1061,41 @@ input {
     display: flex;
     flex-direction: column;
     max-height: 500px;
+    background-color: #fdf1dc !important; 
+    border-color: #922610 !important;
 }
 
+/* --- FIX HEADER INIZIATIVA (Titolo sopra, Tasti sotto, Tutto Centrato) --- */
 #init-header {
     padding: 10px;
-    background: #333;
+    background: #ebdcc2;
     font-weight: bold;
-    border-bottom: 1px solid #555;
+    color: #922610;
+    border-bottom: 1px solid #922610;
+    
+    /* Layout a Colonna per mettere il titolo SOPRA i bottoni */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; 
+    align-items: center;     /* Centra orizzontalmente */
+    justify-content: center;
+    gap: 8px;                /* Spazio tra la scritta "Iniziativa" e i bottoni */
     cursor: move;
+    font-variant: small-caps;
+}
+
+/* Regola per il contenitore dei bottoni (restano in riga tra loro) */
+#init-header > div {
+    display: flex;
+    justify-content: center; /* Centra i bottoni nel contenitore */
+    align-items: center;
+    gap: 5px;
+    width: 100%;
 }
 
 #init-list {
     overflow-y: auto;
     flex: 1;
+    background-color: #fdf1dc !important;
 }
 
 .init-row {
@@ -1070,17 +1104,24 @@ input {
     padding: 5px 10px;
     border-bottom: 1px solid #444;
     font-size: 13px;
+    background-color: #fdf1dc !important; /* Toglie il grigio */
+    color: #333 !important;               /* Testo scuro */
+    border-bottom: 1px solid #d4c4a9;     /* Separatore color sabbia */
 }
 
 .init-row.active-turn {
     background: rgba(255, 152, 0, 0.3);
     border-left: 3px solid #FF9800;
+    background-color: rgba(146, 38, 16, 0.15) !important; /* Rosso trasparente */
+    border-left: 5px solid #922610;
 }
 
 .init-val {
     font-weight: bold;
-    color: #FF9800;
+    color: #922610 !important; /* Rosso scuro */
     width: 30px;
+    font-size: 16px;
+    text-align: center;
 }
 
 .init-name {
@@ -1158,16 +1199,21 @@ input {
 }
 
 .log-entry {
-    background: rgba(0, 0, 0, 0.8);
-    color: #eee;
-    padding: 8px 12px;
-    margin-top: 5px;
-    border-radius: 5px;
-    font-size: 14px;
-    border-left: 4px solid #777;
-    animation: slideIn 0.3s ease;
+    background: #fdf1dc; /* Crema */
+    color: #333; /* Testo scuro */
+    padding: 10px; margin-top: 5px; border-radius: 4px;
+    font-size: 14px; 
+    border: 1px solid #d4c4a9; 
+    border-left: 5px solid #555; /* Bordo indicatore */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); 
     pointer-events: auto;
+    font-family: 'Georgia', serif;
 }
+
+/* Colori specifici per i log */
+.log-entry.crit-success { border-left-color: #2E7D32; background: #E8F5E9; }
+.log-entry.crit-fail { border-left-color: #C62828; background: #FFEBEE; }
+.log-entry.damage-log { border-left-color: #922610; }
 
 @keyframes slideIn {
     from {
@@ -1457,3 +1503,246 @@ input {
     background-color: #922610; /* Colore viola quando usato */
     border-color: #7a200d;
 }
+
+/* --- START SCREEN --- */
+#start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.95); /* Sfondo quasi nero */
+    z-index: 9999; /* Sopra a tutto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.start-content {
+    text-align: center;
+    max-width: 600px;
+}
+
+.big-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    margin: 10px;
+    width: 250px;
+    justify-content: center;
+    display: inline-flex;
+}
+
+/* Nasconde la toolbar all'inizio per pulizia */
+body.loading #toolbar, 
+body.loading #dice-panel, 
+body.loading #log-panel {
+    display: none !important;
+}
+
+/* --- FIX LEGGIBILITÀ TOKEN --- */
+
+/* Forza il testo bianco e aggiunge un'ombra nera per contrasto */
+.stat-box, 
+.hp-text, 
+.token-name {
+    color: #FFFFFF !important;       /* Testo Bianco Puro */
+    text-shadow: 1px 1px 2px #000;   /* Ombra nera forte per staccare dal fondo */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font pulito per i numeri */
+    font-weight: 900 !important;     /* Molto Grassetto */
+    opacity: 1 !important;
+}
+
+/* Assicuriamoci che i box abbiano bordi bianchi definiti */
+.stat-box {
+    border: 2px solid #FFF !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+}
+
+/* Stile specifico per il nome del token */
+.token-name {
+    background: rgba(0, 0, 0, 0.8) !important; /* Sfondo scuro semitrasparente */
+    border: 1px solid #999;
+}
+
+/* --- FIX LEGGIBILITÀ PULSANTI E INIZIATIVA --- */
+
+/* 1. Stile Unificato per TUTTI i pulsanti piccoli (Next, +1h, Play, ecc.) */
+.mini-btn {
+    background-color: #922610 !important; /* Sfondo Rosso Scuro */
+    color: #ffffff !important;            /* Testo Bianco Puro */
+    border: 1px solid #fff !important;    /* Bordino bianco per contrasto */
+    
+    /* Fix Dimensioni: Si adatta al testo */
+    width: auto !important;               
+    height: auto !important;
+    min-width: 24px;                      /* Larghezza minima per le icone singole */
+    padding: 4px 8px !important;          /* Spazio interno comodo */
+    
+    font-family: 'Segoe UI', sans-serif;  /* Font leggibile */
+    font-size: 12px !important;
+    font-weight: bold !important;
+    border-radius: 4px !important;
+    margin: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.mini-btn:hover {
+    background-color: #b72f12 !important; /* Rosso più chiaro al passaggio */
+    transform: scale(1.05);
+    z-index: 100;
+}
+
+/* 2. Fix specifico per il nome nell'elenco Iniziativa */
+.init-name {
+    font-family: 'Georgia', serif;
+    font-size: 15px;
+    font-weight: 900;       /* Molto grassetto */
+    color: #000;            /* Nero pieno per massimo contrasto su pergamena */
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+}
+
+/* 3. Leggero miglioramento righe iniziativa */
+.init-row {
+    padding: 8px 10px;      /* Più spazio per respirare */
+    border-bottom: 1px solid #bdac92;
+    background-color: rgba(255,255,255,0.3); /* Leggermente più chiaro */
+}
+
+/* Evidenzia il turno attivo */
+.init-row.active-turn {
+    background-color: rgba(146, 38, 16, 0.15) !important;
+    border-left: 5px solid #922610;
+}
+
+/* --- FIX GM ROLL (Testo Bianco) --- */
+#dice-panel label {
+    color: #ffffff !important;      /* Forza il bianco */
+    font-weight: bold;
+    text-shadow: 0 0 3px #000;      /* Ombra nera per contrasto */
+    font-family: 'Segoe UI', sans-serif; /* Font più leggibile */
+    font-size: 13px !important;
+}
+
+/* Opzionale: Se vuoi anche il numero del modificatore (+0) più leggibile */
+#dice-mod {
+    color: #000 !important;         /* Testo nero */
+    background: #fff !important;    /* Sfondo bianco */
+    border: 2px solid #922610;      /* Bordo rosso coerente */
+    font-weight: bold;
+}
+
+/* --- FIX ALLINEAMENTO BOTTONI INIZIATIVA --- */
+#init-header > div {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 4px; /* Mette un po' di spazio tra i pulsanti */
+}
+
+/* --- MODIFICA STILE PULSANTI TOKEN (BEIGE) --- */
+/* Trova la regola esistente .token-controls .mini-btn e SOSTITUISCILA con questa */
+.token-controls .mini-btn,
+.controls-left .mini-btn,
+.controls-right .mini-btn {
+    /* Colore Beige pergamena */
+    background-color: #ebdcc2 !important; 
+    color: #333 !important;
+    border: 1px solid #922610 !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
+    /* Reset delle regole "rosse" dei pulsanti generici */
+    width: 22px !important;
+    height: 22px !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    border-radius: 4px !important;
+}
+
+.token-controls .mini-btn:hover,
+.controls-left .mini-btn:hover,
+.controls-right .mini-btn:hover {
+    background-color: #d4c4a9 !important;
+    transform: scale(1.1) !important;
+}
+
+/* La 'X' deve rimanere rossa */
+.token-controls .btn-del {
+    background-color: #FFEBEE !important;
+    color: #C62828 !important;
+    border-color: #C62828 !important;
+}
+
+/* --- NUOVI CONTENITORI LATERALI --- */
+/* Contenitore Sinistro (Stats, Inv) - Impilati dal basso */
+.controls-left {
+    position: absolute;
+    left: -28px; /* Spostato a sinistra del token */
+    bottom: 15px; /* Vicino alla barra HP */
+    display: flex;
+    flex-direction: column-reverse; /* Parte dal basso */
+    gap: 4px;
+    opacity: 0; /* Nascosto di base */
+    transition: opacity 0.2s;
+    z-index: 20;
+}
+
+/* Contenitore Destro (Attacchi) - Centrato verticalmente */
+.controls-right {
+    position: absolute;
+    right: -28px; /* Spostato a destra del token */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 20;
+}
+
+/* Mostra i controlli laterali all'hover sul token */
+.token-container:hover .controls-left,
+.token-container:hover .controls-right {
+    opacity: 1;
+}
+
+/* --- NUOVO PANNELLO ATTACCHI RAPIDI --- */
+.quick-attack-panel {
+    position: absolute;
+    top: 0; /* Si allinea in alto a destra del token */
+    left: 110%; /* Appare a destra del token */
+    width: 200px;
+    background: #fdf1dc; /* Pergamena chiara */
+    border: 2px solid #922610; /* Bordo rosso */
+    border-radius: 5px;
+    padding: 8px;
+    z-index: 100; /* Sopra a tutto */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+/* Stile per le righe dentro il pannello rapido */
+.qa-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px dotted #922610;
+    padding-bottom: 4px;
+    font-size: 12px;
+}
+.qa-name { font-weight: bold; color: #333; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qa-btns { display: flex; gap: 2px; }
+/* Pulsanti Hit/Dmg nel pannello rapido (più piccoli dei normali mini-btn) */
+.qa-btn {
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    border: 1px solid transparent;
+}
+.qa-btn.hit { background: #E8F5E9; color: #2E7D32; border-color: #2E7D32; }
+.qa-btn.dmg { background: #FFEBEE; color: #C62828; border-color: #C62828; }
+.qa-btn:hover { filter: brightness(0.9); transform: translateY(-1px); }

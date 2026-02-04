@@ -22,7 +22,17 @@ function initStars() {
 }
 initStars();
 
-function toggleClock() { const p = document.getElementById('clock-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; updateClockUI(); }
+function toggleClock() { 
+    const p = document.getElementById('clock-panel'); 
+    const wasOpen = p.style.display === 'block'; // Memorizza se era aperto
+    closeAllMenus(); // Chiude tutti gli altri (Musica, Meteo, ecc.)
+    
+    if (!wasOpen) { // Se era chiuso, aprilo
+        p.style.display = 'block'; 
+        updateClockUI(); 
+    }
+}
+
 function toggleGritty() { isGritty = document.getElementById('gritty-toggle').checked; }
 function updateCalendarData() { currentMonthName = document.getElementById('month-name').value; currentYear = parseInt(document.getElementById('year-num').value); updateClockUI(); syncClockToPlayer(); }
 function addTime(hours) {
@@ -88,12 +98,14 @@ function updateSkyColor() {
 function updateClockUI() {
     const d = Math.floor(gameMinutes / 1440) + 1; const dom = ((d - 1) % 28) + 1;
     const h = Math.floor((gameMinutes % 1440) / 60), m = gameMinutes % 60;
+    
     document.getElementById('clock-display').textContent = `${h<10?'0'+h:h}:${m<10?'0'+m:m}`;
-    const cd = document.getElementById('calendar-display'); cd.textContent = `Giorno ${dom}`;
+    
+    const cd = document.getElementById('calendar-display'); 
+    cd.textContent = `Giorno ${dom}`;
     cd.className = [7,14,21,28].includes(dom) ? "clock-day special-day" : "clock-day";
-    document.getElementById('month-name').value = currentMonthName; document.getElementById('year-num').value = currentYear;
-    document.getElementById('moon1-icon').textContent = moonPhases[Math.floor((d % MOON_A_CYCLE) / (MOON_A_CYCLE / 8)) % 8];
-    document.getElementById('moon2-icon').textContent = moonPhases[Math.floor((d % MOON_B_CYCLE) / (MOON_B_CYCLE / 8)) % 8];
+    document.getElementById('month-name').value = currentMonthName; 
+    document.getElementById('year-num').value = currentYear;
     updateSkyColor();
 }
 
@@ -101,10 +113,13 @@ function syncClockToPlayer() {
     if(!playerWin || playerWin.closed) return;
     const d = Math.floor(gameMinutes / 1440) + 1, dom = ((d - 1) % 28) + 1;
     const h = Math.floor((gameMinutes % 1440) / 60), m = gameMinutes % 60;
+    
     let pc = playerWin.document.getElementById('p-clock');
     if(!pc) { pc = playerWin.document.createElement('div'); pc.id = 'p-clock'; pc.className = 'p-clock-overlay'; playerWin.document.body.appendChild(pc); }
+
     const isSp = [7,14,21,28].includes(dom) ? "color:#f44336;text-shadow:0 0 5px #d32f2f;" : "color:#aaa";
-    pc.innerHTML = `<div style="font-size:24px">${h<10?'0'+h:h}:${m<10?'0'+m:m}</div><div style="font-size:16px;color:#FF9800">${currentMonthName} ${currentYear}</div><div style="font-size:14px;${isSp}">Giorno ${dom}</div><div style="font-size:14px;margin-top:2px;"><span>${document.getElementById('moon1-icon').textContent}</span> <span style="margin-left:5px">${document.getElementById('moon2-icon').textContent}</span></div>`;
+    pc.innerHTML = `<div style="font-size:24px">${h<10?'0'+h:h}:${m<10?'0'+m:m}</div><div style="font-size:16px;color:#FF9800">${currentMonthName} ${currentYear}</div><div style="font-size:14px;${isSp}">Giorno ${dom}</div>`;
+
     updateSkyColor();
 }
 
@@ -113,7 +128,13 @@ let currentWeather = '';
 let rainReq; const rainCanvas = document.getElementById('rain-canvas'); const rainCtx = rainCanvas.getContext('2d');
 let drops = []; const flashDiv = document.getElementById('storm-flash');
 
-function toggleWeather() { const p = document.getElementById('weather-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
+function toggleWeather() { 
+    const p = document.getElementById('weather-panel'); 
+    const wasOpen = p.style.display === 'block';
+    closeAllMenus(); 
+    
+    if (!wasOpen) p.style.display = 'block'; 
+}
 
 function setWeather(type) {
     currentWeather = type;
@@ -217,7 +238,14 @@ let playerMuted = false;
 
 bgMusic.onended = () => nextTrack();
 
-function toggleMusic() { const p = document.getElementById('music-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
+function toggleMusic() { 
+    const p = document.getElementById('music-panel'); 
+    const wasOpen = p.style.display === 'block';
+    closeAllMenus(); 
+    
+    if (!wasOpen) p.style.display = 'block'; 
+}
+
 function togglePlayerMute() { playerMuted = document.getElementById('mute-player-toggle').checked; syncAudioState(); }
 
 document.getElementById('upload-music').addEventListener('change', function(e) {
@@ -347,20 +375,34 @@ document.getElementById('upload-token').addEventListener('change',e=>{
     });
     
     document.getElementById('upload-session').addEventListener('change', e=>{
-        const f = e.target.files[0]; if(!f) return; const r = new FileReader();
-        r.onload = v => { try {
-            const s = JSON.parse(v.target.result);
-            if (s.map) { mapImg.src = s.map; mapImg.style.width = "100%"; }
-            document.querySelectorAll('.token-container').forEach(e => e.remove()); document.querySelectorAll('.prop-container').forEach(e => e.remove());
-            tokensData = {}; propsData = {}; initiativeList = [];
-            if (s.time) gameMinutes = s.time; if (s.month) currentMonthName = s.month; if (s.year) currentYear = s.year;
-            if (s.gritty !== undefined) { isGritty = s.gritty; document.getElementById('gritty-toggle').checked = isGritty; }
-            updateClockUI();
-            if (s.tokens) s.tokens.forEach(t => spawnToken(t)); if (s.props) s.props.forEach(p => spawnProp(p)); if (s.init) initiativeList = s.init;
-            renderInitiative(); syncInitiativeToPlayer(); syncClockToPlayer(); setTimeout(syncMap, 200); alert("Sessione caricata!");
-        } catch (err) { alert("Errore file sessione."); } };
-        r.readAsText(f); e.target.value = '';
-    });
+    const f = e.target.files[0]; if(!f) return; const r = new FileReader();
+    r.onload = v => { try {
+        const s = JSON.parse(v.target.result);
+        if (s.map) { mapImg.src = s.map; mapImg.style.width = "100%"; }
+        
+        // Pulisce e ricarica i dati
+        document.querySelectorAll('.token-container').forEach(e => e.remove()); 
+        document.querySelectorAll('.prop-container').forEach(e => e.remove());
+        tokensData = {}; propsData = {}; initiativeList = [];
+        
+        if (s.time) gameMinutes = s.time; if (s.month) currentMonthName = s.month; if (s.year) currentYear = s.year;
+        if (s.gritty !== undefined) { isGritty = s.gritty; document.getElementById('gritty-toggle').checked = isGritty; }
+        
+        updateClockUI();
+        if (s.tokens) s.tokens.forEach(t => spawnToken(t)); 
+        if (s.props) s.props.forEach(p => spawnProp(p)); 
+        if (s.init) initiativeList = s.init;
+        
+        renderInitiative(); syncInitiativeToPlayer(); syncClockToPlayer(); setTimeout(syncMap, 200); 
+        
+        // --- MODIFICA FONDAMENTALE ---
+        alert("Sessione caricata!");
+        startNewSession(); // <--- Questa riga chiude la schermata iniziale!
+        // -----------------------------
+
+    } catch (err) { alert("Errore file sessione."); } };
+    r.readAsText(f); e.target.value = '';
+});
     
     document.getElementById('upload-prop').addEventListener('change', e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=v=>{ spawnProp({ id: Date.now(), image: v.target.result, x: (-worldX + gameArea.clientWidth/2)/worldScale, y: (-worldY + gameArea.clientHeight/2)/worldScale, z: 50, scale: 1 }); }; r.readAsDataURL(f); e.target.value=''; });
     
@@ -482,42 +524,64 @@ document.getElementById('upload-token').addEventListener('change',e=>{
     function spawnToken(d){
     if(tokensData[d.id]) d.id = Date.now();
     
-    if(!d.inventory) d.inventory=[]; 
-    if(!d.spellSlots) d.spellSlots=[]; 
-    if(!d.statuses) d.statuses=[]; 
+    // --- Inizializzazione Dati (Standard) ---
+    if(!d.inventory) d.inventory=[]; if(!d.spellSlots) d.spellSlots=[]; if(!d.statuses) d.statuses=[]; 
     if(!d.stats) d.stats={str:10,dex:10,con:10,int:10,wis:10,cha:10};
-    
     if(!d.details) d.details = { type: "Umanoide Medio, Qualsiasi", acType: "(Armatura naturale)", senses: "Percezione Passiva 10", languages: "Comune", cr: "0 (0 XP)", profBonus: "+2" };
-    if(!d.traits) d.traits = []; 
-    if(!d.legendaryActions) d.legendaryActions = [];
-    if(!d.attacks) d.attacks = [];
-    if(!d.attackCount) d.attackCount = 1;
-
-    if(!d.isEnemy && d.attacks.length === 0) {
-        const str = d.stats.str || 10;
-        const strMod = Math.floor((str - 10) / 2);
-        const prof = 2; 
-        const toHit = strMod + prof;
-        const hitStr = toHit >= 0 ? `+${toHit}` : `${toHit}`;
-        d.attacks.push({name: "Colpo Disarmato", hit: hitStr, dmg: `${1 + strMod}`});
-    }
-
+    if(!d.traits) d.traits = []; if(!d.legendaryActions) d.legendaryActions = [];
+    if(!d.attacks) d.attacks = []; if(!d.attackCount) d.attackCount = 1;
+    if(!d.isEnemy && d.attacks.length === 0) { const str = d.stats.str || 10; const strMod = Math.floor((str - 10) / 2); const prof = 2; const toHit = strMod + prof; const hitStr = toHit >= 0 ? `+${toHit}` : `${toHit}`; d.attacks.push({name: "Colpo Disarmato", hit: hitStr, dmg: `${1 + strMod}`}); }
     tokensData[d.id]=d;
 
     const el=document.createElement('div');el.className='token-container'+(d.hidden?' token-hidden':'');el.id=`tok-${d.id}`;
     el.style.left=d.x+'px';el.style.top=d.y+'px';el.style.zIndex=d.z;if(d.scale)el.style.transform=`scale(${d.scale})`;
     
-    const c=document.createElement('div');c.className='token-controls';
-    c.append(mkBtn('👁️','btn-vis',e=>{d.hidden=!d.hidden;const t=document.getElementById(`tok-${d.id}`);d.hidden?t.classList.add('token-hidden'):t.classList.remove('token-hidden');syncTokenToPlayer(d.id);}));
-    if(d.isEnemy){ let b=mkBtn('📊','btn-show-stats',e=>{d.statsVisible=!d.statsVisible;e.target.classList.toggle('active');syncTokenToPlayer(d.id);}); if(d.statsVisible)b.classList.add('active'); c.append(b); }
-    else { let b=mkBtn('🛡️','btn-stat',e=>{d.showStats=!d.showStats;e.target.classList.toggle('active');syncTokenToPlayer(d.id);}); if(d.showStats)b.classList.add('active'); c.append(b); }
-    c.append(mkBtn('📜','btn-sheet',e=>openSheet(d.id))); 
-    c.append(mkBtn('🎒','btn-inv',e=>openInventory(d.id)));
-    c.append(mkBtn('⚔️','btn-init',e=>{const v=prompt("Iniziativa:");if(v)addToInitiative(d.id,parseInt(v));}));
-    c.append(mkBtn('✨','btn-cond',e=>openStatusMenu(d.id)));
-    if (d.isEnemy) { const bNotes = mkBtn('📝', 'btn-notes', e => openNotes(d.id)); c.append(bNotes); }
+    // --- BARRA SUPERIORE (Top) ---
+    const cTop=document.createElement('div'); cTop.className='token-controls';
+    
+    // 1. Visibilità Token
+    cTop.append(mkBtn('👁️','btn-vis',e=>{d.hidden=!d.hidden;const t=document.getElementById(`tok-${d.id}`);d.hidden?t.classList.add('token-hidden'):t.classList.remove('token-hidden');syncTokenToPlayer(d.id);}));
+    
+    // 2. Iniziativa
+    cTop.append(mkBtn('⚔️','btn-init',e=>{const v=prompt("Iniziativa:");if(v)addToInitiative(d.id,parseInt(v));}));
+    
+    // 3. Condizioni
+    cTop.append(mkBtn('✨','btn-cond',e=>openStatusMenu(d.id)));
+    
+    // 4. Mostra Statistiche ai Giocatori (Rimesso qui sopra)
+    if(d.isEnemy){ 
+        let b=mkBtn('📊','btn-show-stats',e=>{d.statsVisible=!d.statsVisible;e.target.classList.toggle('active');syncTokenToPlayer(d.id);}); 
+        if(d.statsVisible)b.classList.add('active'); cTop.append(b); 
+    } else { 
+        let b=mkBtn('🛡️','btn-stat',e=>{d.showStats=!d.showStats;e.target.classList.toggle('active');syncTokenToPlayer(d.id);}); 
+        if(d.showStats)b.classList.add('active'); cTop.append(b); 
+    }
+
+    // 5. Note (Solo nemici)
+    if (d.isEnemy) { cTop.append(mkBtn('📝', 'btn-notes', e => openNotes(d.id))); }
+    
+    // 6. Elimina (X Rossa)
     const bD=mkBtn('✖','btn-del',e=>{if(confirm(`Eliminare ${d.name}?`)){if(confirm("Salvare prima?"))downloadJSON(d,`${d.name}.dnd`);el.remove();delete tokensData[d.id];removeFromInitiative(d.id);removeTokenFromPlayer(d.id);}}); bD.addEventListener('mousedown',e=>e.stopPropagation());
-    c.append(bD);
+    cTop.append(bD);
+
+
+    // --- LATO SINISTRO (Left) ---
+    // Impilati dal basso verso l'alto (grazie a flex-direction: column-reverse nel CSS)
+    const cLeft = document.createElement('div'); cLeft.className = 'controls-left';
+    
+    // Primo append = In basso (Scheda)
+    cLeft.append(mkBtn('📜','btn-sheet',e=>openSheet(d.id))); 
+    
+    // Secondo append = Sopra il precedente (Inventario)
+    cLeft.append(mkBtn('🎒','btn-inv',e=>openInventory(d.id))); 
+
+
+    // --- LATO DESTRO (Right) ---
+    const cRight = document.createElement('div'); cRight.className = 'controls-right';
+    // Tasto Attacchi Rapidi
+    cRight.append(mkBtn('⚔️', 'btn-quick-atk', e => toggleQuickAttacks(d.id, e.target.closest('.token-container'))));
+
+    // --- FINE CONTROLLI ---
 
     const resizer = document.createElement('div'); resizer.className = 'resize-handle'; resizer.textContent = '↘';
     setupResize(el, resizer, d.id, false);
@@ -531,7 +595,10 @@ document.getElementById('upload-token').addEventListener('change',e=>{
     const stOvr=document.createElement('div');stOvr.className='status-overlay';
     const hp=document.createElement('div');hp.className='hp-bar-container';hp.innerHTML=`<div class="hp-bar-fill"></div><div class="hp-text"></div>`;setupHpLogic(hp,d.id);
     
-    el.append(c,st,dr,stOvr,hp);worldLayer.appendChild(el);updateHpVisuals(el,d);updateStatusVisuals(el,d);setupDrag(el,dr,d.id);syncTokenToPlayer(d.id);
+    // Aggiungi tutti i contenitori al token
+    el.append(cTop, cLeft, cRight, st, dr, stOvr, hp);
+    
+    worldLayer.appendChild(el);updateHpVisuals(el,d);updateStatusVisuals(el,d);setupDrag(el,dr,d.id);syncTokenToPlayer(d.id);
     el.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); if(confirm(`Scaricare i dati aggiornati di ${d.name}?`)) { downloadJSON(tokensData[d.id], `${d.name}_updated.dnd`); } };
 }
     
@@ -1053,3 +1120,128 @@ function openPlayerWindow(){
         t.style.left=d.x+'px'; t.style.top=d.y+'px'; t.style.zIndex=d.z; t.style.transform=`scale(${d.scale})`;
     }
     function removePropFromPlayer(id){ if(playerWin&&!playerWin.closed){ const e=playerWin.document.getElementById(`p-prop-${id}`); if(e)e.remove(); } }
+
+    // --- START SCREEN LOGIC ---
+
+// Eseguiamo questo all'avvio
+document.addEventListener("DOMContentLoaded", () => {
+    // Aggiungiamo la classe loading al body per nascondere l'interfaccia di gioco
+    document.body.classList.add('loading');
+});
+
+function startNewSession() {
+    // Rimuove la schermata iniziale
+    const screen = document.getElementById('start-screen');
+    screen.style.opacity = '0';
+    setTimeout(() => {
+        screen.style.display = 'none';
+        document.body.classList.remove('loading'); // Mostra la toolbar
+    }, 500);
+}
+
+// Modifichiamo leggermente il caricamento sessione per chiudere il menu
+const originalSessionLoader = document.getElementById('upload-session').onchange; // Salviamo il vecchio listener se esiste (ma meglio riscriverlo qui sotto per pulizia)
+
+// SOSTITUISCI il listener 'upload-session' esistente con questo:
+document.getElementById('upload-session').addEventListener('change', e => {
+    const f = e.target.files[0]; if(!f) return; 
+    const r = new FileReader();
+    r.onload = v => { try {
+        const s = JSON.parse(v.target.result);
+        if (s.map) { mapImg.src = s.map; mapImg.style.width = "100%"; }
+        
+        // Pulisce e carica
+        document.querySelectorAll('.token-container').forEach(e => e.remove()); 
+        document.querySelectorAll('.prop-container').forEach(e => e.remove());
+        tokensData = {}; propsData = {}; initiativeList = [];
+        
+        if (s.time) gameMinutes = s.time; if (s.month) currentMonthName = s.month; if (s.year) currentYear = s.year;
+        if (s.gritty !== undefined) { isGritty = s.gritty; document.getElementById('gritty-toggle').checked = isGritty; }
+        
+        updateClockUI();
+        if (s.tokens) s.tokens.forEach(t => spawnToken(t)); 
+        if (s.props) s.props.forEach(p => spawnProp(p)); 
+        if (s.init) initiativeList = s.init;
+        
+        renderInitiative(); syncInitiativeToPlayer(); syncClockToPlayer(); 
+        setTimeout(syncMap, 200); 
+        
+        alert("Sessione caricata!");
+        startNewSession(); // <--- CHIUDE IL MENU INIZIALE
+        
+    } catch (err) { alert("Errore file sessione."); } };
+    r.readAsText(f); e.target.value = '';
+});
+
+// --- GESTIONE CHIUSURA MENU (CLICK OUTSIDE) ---
+
+// Funzione che chiude tutti i pannelli flottanti
+function closeAllMenus() {
+    ['clock-panel', 'music-panel', 'weather-panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
+}
+
+// Listener globale: se clicchi fuori, chiude i menu
+window.addEventListener('mousedown', function(e) {
+    // 1. Se clicco dentro un pannello rapido, non fare nulla
+    if (e.target.closest('.quick-attack-panel')) return;
+
+    // 2. Se clicco il bottone che apre il pannello rapido, non fare nulla (ci pensa il toggle)
+    if (e.target.closest('.btn-quick-atk')) return;
+
+    // 3. Chiudi tutti i pannelli attacchi rapidi aperti
+    document.querySelectorAll('.quick-attack-panel').forEach(p => p.remove());
+
+    // --- Logica precedente per i menu fluttuanti ---
+    if (e.target.closest('.floating-panel')) return;
+    if (e.target.closest('button')) return;
+    closeAllMenus();
+});
+
+// --- GESTIONE ATTACCHI RAPIDI (LATO DESTRO) ---
+
+function toggleQuickAttacks(id, tokenEl) {
+    // Controlla se il pannello esiste già per questo token
+    let panel = tokenEl.querySelector('.quick-attack-panel');
+    
+    // Se esiste, lo chiudiamo e basta (toggle)
+    if (panel) {
+        panel.remove();
+        return;
+    }
+
+    // Chiude eventuali altri pannelli rapidi aperti su altri token
+    document.querySelectorAll('.quick-attack-panel').forEach(p => p.remove());
+
+    const d = tokensData[id];
+    if (!d.attacks || d.attacks.length === 0) {
+        alert("Nessun attacco configurato.");
+        return;
+    }
+
+    // Crea il nuovo pannello
+    panel = document.createElement('div');
+    panel.className = 'quick-attack-panel';
+    
+    // Titolo del pannello
+    panel.innerHTML = `<div style="font-weight:bold; color:#922610; border-bottom:2px solid #922610; margin-bottom:5px; font-variant:small-caps;">Attacchi Rapidi</div>`;
+    
+    // Genera la lista degli attacchi
+    d.attacks.forEach(atk => {
+        const row = document.createElement('div');
+        row.className = 'qa-row';
+        row.innerHTML = `
+            <span class="qa-name" title="${atk.name}">${atk.name}</span>
+            <div class="qa-btns">
+                <button class="qa-btn hit" onclick="rollAttackAction('hit', '${atk.hit}', '${atk.name}')">${atk.hit}</button>
+                <button class="qa-btn dmg" onclick="rollAttackAction('dmg', '${atk.dmg}', '${atk.name}')">${atk.dmg}</button>
+            </div>
+        `;
+        panel.appendChild(row);
+    });
+
+    // Aggiunge il pannello dentro il token container
+    tokenEl.appendChild(panel);
+}

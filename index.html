@@ -9,6 +9,20 @@
 </head>
 
 <body>
+    <div id="start-screen">
+    <div class="start-content">
+        <h1 style="color: #FF9800; font-size: 60px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 152, 0, 0.5);">PIERO DM CONSOLE</h1>
+        <p style="color: #aaa; margin-bottom: 40px; font-style: italic;">La suite definitiva per i Dungeon Master</p>
+        
+        <div class="start-buttons">
+            <button class="primary big-btn" onclick="startNewSession()">🗺️ NUOVA SESSIONE</button>
+            <button class="load-session big-btn" onclick="document.getElementById('upload-session').click()">📂 CARICA SESSIONE (.ses)</button>
+            <button class="big-btn" onclick="openCreationModal('hero'); closeModal('start-screen');">🛠️ CREA TOKEN</button>
+        </div>
+        
+        <div style="margin-top: 30px; font-size: 12px; color: #555;">v2.0 - Delta Stable</div>
+    </div>
+</div>
     
     <div id="dice-overlay" style="display:none">
         <div id="anim-die">20</div>
@@ -33,9 +47,7 @@
         <div class="separator"></div>
         <button class="save-session" onclick="downloadSession()">💾 SALVA</button>
         
-        <button class="load-session" onclick="document.getElementById('upload-session').click()">📂 CARICA
-            SESSIONE
-        </button>
+        
         
         <div class="separator"></div>
         
@@ -85,12 +97,6 @@
         </div>
         
         <div id="calendar-display" class="clock-day">Giorno 1</div>
-        
-        <div class="moon-row">
-            <div class="moon-phase"><span id="moon1-icon" class="moon-icon">🌑</span><span style="color:#b3e5fc">Luna A</span></div>
-            
-            <div class="moon-phase"><span id="moon2-icon" class="moon-icon">🌑</span><span style="color:#e1bee7">Luna B</span></div>
-        </div>
         
         <div class="clock-controls">
             <button class="mini-btn" onclick="addTime(1)">+1h</button>
@@ -143,7 +149,7 @@
         <div id="init-header">
             <span>Iniziativa</span>
             <div>
-                <button onclick="sortInitiative()" class="mini-btn">▼</button>
+                <button onclick="sortInitiative()" class="mini-btn">Ordina</button>
                 <button onclick="nextTurn()" class="mini-btn">Next</button>
                 <button onclick="clearInitiative()" class="mini-btn btn-del">x</button>
             </div>
