@@ -360,7 +360,14 @@ function syncWorldView(){
 gameArea.addEventListener('mousedown',e=>{if(e.target.closest('.token-container')||e.target.closest('.prop-container')||e.target.tagName==='BUTTON')return;isPanning=true;panStartX=e.clientX-worldX;panStartY=e.clientY-worldY;});
 window.addEventListener('mousemove',e=>{if(isPanning){e.preventDefault();worldX=e.clientX-panStartX;worldY=e.clientY-panStartY;updateWorldTransform();}});
 window.addEventListener('mouseup',()=>isPanning=false);
-gameArea.addEventListener('wheel',e=>{if(e.target.closest('.token-container')||e.target.closest('.prop-container'))return;e.preventDefault();changeZoom(e.deltaY<0?0.1:-0.1);});
+
+gameArea.addEventListener('wheel', e => {
+    e.preventDefault(); // Blocca lo scroll della pagina web
+    
+    // Esegue la tua funzione di zoom (rimuovendo il blocco 'if')
+    changeZoom(e.deltaY < 0 ? 0.1 : -0.1);
+}, { passive: false });
+
 document.getElementById('upload-map').addEventListener('change',e=>{if(e.target.files[0]){const r=new FileReader();r.onload=v=>{mapImg.src=v.target.result;mapImg.style.width="100%";resetView();setTimeout(syncMap,200);};r.readAsDataURL(e.target.files[0]);}});
 
 document.getElementById('upload-token').addEventListener('change',e=>{
@@ -844,7 +851,7 @@ function openInventory(id) {
             <button class="mini-btn" style="width:100%; margin-top:10px; padding:5px;" onclick="addInvRow()">+ Aggiungi Oggetto</button>
             
             <div class="modal-footer" style="border-top:none; margin-top:10px;">
-                <button class="primary" style="background-color: #FF9800 !important; color: #000 !important; border-color: #FF9800 !important;" onclick="closeInventory()">Chiudi</button>
+                <button class="primary" style="background-color: #922610 !important; color: white !important; border-color: #5a1005 !important;" onclick="closeInventory()">Chiudi</button>
             </div>
         </div>
     `;
@@ -919,7 +926,7 @@ function openSpellManager(id) {
             <button class="mini-btn" style="width:100%; margin-top:10px; padding:5px;" onclick="addSpellLevelRow()">+ Aggiungi Livello</button>
             
             <div class="modal-footer" style="border-top:none; margin-top:10px;">
-                <button class="primary" style="background-color: #FF9800 !important; color: #000 !important; border-color: #FF9800 !important;" onclick="closeSpellManager()">Chiudi</button>
+                <button class="primary" style="background-color: #922610 !important; color: white !important; border-color: #5a1005 !important;" onclick="closeSpellManager()">Chiudi</button>
             </div>
         </div>
     `;

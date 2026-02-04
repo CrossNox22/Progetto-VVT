@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <title>Piero DM Console - Final Stable</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="assets/css/main.css">
+    
+    <link rel="stylesheet" href="assets/css/components/modal.css">
 </head>
 
 <body>
@@ -148,8 +151,7 @@
     <div id="init-panel">
         <div id="init-header">
             <span>Iniziativa</span>
-            <div>
-                <button onclick="sortInitiative()" class="mini-btn">Ordina</button>
+            <div>           
                 <button onclick="nextTurn()" class="mini-btn">Next</button>
                 <button onclick="clearInitiative()" class="mini-btn btn-del">x</button>
             </div>
@@ -157,23 +159,15 @@
         <div id="init-list"></div>
     </div>
     
-    <div id="dice-panel">
-        <div class="die-btn" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);" onclick="rollDice(4)">4</div>
-        <div class="die-btn" onclick="rollDice(6)">6</div>
-        <div class="die-btn" style="clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);" onclick="rollDice(8)">8
-        </div>
-        <div class="die-btn" style="clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);"
-        onclick="rollDice(10)">10</div>
-        <div class="die-btn" style="clip-path: polygon(50% 0%, 95% 38%, 82% 100%, 18% 100%, 5% 38%);"
-        onclick="rollDice(12)">12</div>
-        <div class="die-btn" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);"
-        onclick="rollDice(20)">20</div>
-        <div class="die-btn" style="clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);"
-        onclick="rollDice(100)">100</div>
-        <div style="width:1px; height:30px; background:#555; margin:0 10px;"></div>
-        <input type="number" id="dice-mod" class="mod-input" placeholder="+0" value="0">
-        <label style="font-size:12px; cursor:pointer;"><input type="checkbox" id="gm-roll"> GM Roll</label>
-    </div>
+    <div id="dice-bar" class="dice-bar">
+    <button class="dice-btn" onclick="rollDie(4)">d4</button>
+    <button class="dice-btn" onclick="rollDie(6)">d6</button>
+    <button class="dice-btn" onclick="rollDie(8)">d8</button>
+    <button class="dice-btn" onclick="rollDie(10)">d10</button>
+    <button class="dice-btn" onclick="rollDie(12)">d12</button>
+    <button class="dice-btn" onclick="rollDie(20)" style="color: #c62828; border-color: #c62828;">d20</button>
+    <button class="dice-btn" onclick="rollDie(100)" style="font-size: 11px;">d100</button>
+</div>
     
     <div id="log-panel"></div>
     
@@ -209,7 +203,7 @@
                 <button class="primary" style="width:100%" onclick="addInvRow()">+ Aggiungi Oggetto</button>
             </div>
             <div class="modal-footer">
-                <button class="primary" onclick="closeInventory()">Chiudi</button>
+                <button onclick="closeInventory()" style="background-color: #922610; color: white; border: 1px solid #5a1005; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Chiudi</button>
             </div>
         </div>
     </div>
@@ -261,7 +255,8 @@
         </div>
     </div>
     
-    <script src="app.js"></script>
+    <script type="module" src="assets/js/main.js"></script>
+    
 </body>
 
 </html>
