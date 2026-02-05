@@ -213,3 +213,22 @@ FIX FORZATO BOTTONE CHIUDI (INVENTARIO)
     background: #721c0b !important;
     cursor: pointer;
 }
+
+.modal-footer button,
+.modal-footer button.primary {
+    background-color: #922610 !important;
+    /* Rosso D&D */
+    background-image: none !important;
+    /* Via gradienti arancioni */
+    color: white !important;
+    border: 1px solid #5a1005 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    opacity: 1 !important;
+}
+
+.modal-footer button:hover,
+.modal-footer button.primary:hover {
+    background-color: #721c0b !important;
+    /* Rosso scuro */
+    transform: translateY(-1px);
+}

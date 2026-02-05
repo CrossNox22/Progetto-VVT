@@ -1,9 +1,7 @@
-/* main.css - Entry Point */
-
 /* 1. Base */
 @import 'base/theme.css';
 @import 'base/layout.css';
-@import 'base/animations.css'; /* <--- NUOVO! */
+@import 'base/animations.css';
 
 /* 2. Componenti */
 @import 'components/token.css';
@@ -11,64 +9,3 @@
 @import 'components/dice.css';
 @import 'components/modal.css';
 
-/* --- FIX FINALE PULSANTE CHIUDI (Rosso D&D) --- */
-/* Mettilo alla fine di main.css per vincere su tutto */
-
-.modal-footer button,
-.modal-footer button.primary {
-    background-color: #922610 !important;    /* Rosso D&D */
-    background-image: none !important;       /* Via gradienti arancioni */
-    color: white !important;
-    border: 1px solid #5a1005 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.4) !important;
-    opacity: 1 !important;
-}
-
-.modal-footer button:hover,
-.modal-footer button.primary:hover {
-    background-color: #721c0b !important;    /* Rosso scuro */
-    transform: translateY(-1px);
-}
-
-/* Stile Barra Dadi */
-.dice-bar {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px 20px;
-    border-radius: 30px;
-    z-index: 1000;
-    border: 1px solid #922610;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-}
-
-.dice-btn {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid #f4e4bc;
-    background: #333;
-    color: #f4e4bc;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dice-btn:hover {
-    transform: scale(1.15);
-    background: #555;
-    border-color: white;
-    color: white;
-}
-
-.dice-btn:active {
-    transform: scale(0.95);
-}
