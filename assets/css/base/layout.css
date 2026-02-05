@@ -128,7 +128,6 @@ body.loading #log-panel {
     display: none !important;
 }
 
-<<<<<<< HEAD
 /* --- STILE SOTTOMENU TOKEN (D&D Style) --- */
 
 .submenu-dropdown {
@@ -179,7 +178,7 @@ body.loading #log-panel {
     transform: translateY(-1px); /* Piccolo effetto 3D */
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-=======
+
 /* MEDIA QUERY per schermi piccoli */
 @media (max-width: 768px) {
     #toolbar {
@@ -268,4 +267,4 @@ body.loading #log-panel {
     }
 }
 
->>>>>>> 97cf6a0543f4edaecc25e704d4e7f296764e4d3f
+
