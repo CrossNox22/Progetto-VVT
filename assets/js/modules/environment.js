@@ -282,3 +282,17 @@ export function syncWeatherToPlayer() {
         pDraw();
     }
 }
+
+const burgerBtn = document.getElementById('burger-btn');
+const dropdown = document.querySelector('.burger-dropdown');
+
+burgerBtn.addEventListener('click', () => {
+    dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+});
+
+// chiude il menu se clicchi fuori
+document.addEventListener('click', (e) => {
+    if (!burgerBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+});
