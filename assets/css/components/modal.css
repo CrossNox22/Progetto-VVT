@@ -143,8 +143,8 @@
 }
 
 /* =======================================================
-   FIX RAPIDO LARGHEZZE ATTACCHI (Aggiungi alla fine)
-   ======================================================= */
+FIX RAPIDO LARGHEZZE ATTACCHI (Aggiungi alla fine)
+======================================================= */
 
 /* 1. Impedisce alla riga di andare a capo */
 .statblock-card div[style*="flex"] {
@@ -171,8 +171,8 @@
     text-align: right;         /* Testo allineato a destra vicino al bottone */
 }
 /* =======================================================
-   FIX DEFINITIVO COLORE (FORZA BRUTA)
-   ======================================================= */
+FIX DEFINITIVO COLORE (FORZA BRUTA)
+======================================================= */
 
 /* 1. Applica il rosso a TUTTO ciò che sta nell'header (h4, div, span, label, ecc.) */
 .statblock-card h4, 
@@ -190,8 +190,8 @@
 }
 
 /* ==========================================================================
-   FIX FORZATO BOTTONE CHIUDI (INVENTARIO)
-   ========================================================================== */
+FIX FORZATO BOTTONE CHIUDI (INVENTARIO)
+========================================================================== */
 
 /* 1. Reset e Colore Rosso D&D */
 #inventory-modal .modal-footer button,      /* Inventario */
