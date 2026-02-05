@@ -130,6 +130,11 @@ window.toggleWeather = env.toggleWeather;
 window.setWeather = env.setWeather;
 window.toggleGritty = env.toggleGritty;
 window.updateCalendarData = env.updateCalendarData;
+window.syncClockToPlayer = env.syncClockToPlayer;
+window.syncWeatherToPlayer = env.syncWeatherToPlayer;
+window.syncClockToPlayer = env.syncClockToPlayer;
+window.syncWeatherToPlayer = env.syncWeatherToPlayer;
+window.updateSkyColor = env.updateSkyColor;
 
 // Audio
 window.toggleMusic = audio.toggleMusic;
@@ -145,12 +150,16 @@ window.togglePlayerMute = audio.togglePlayerMute;
 // Mappa
 window.changeZoom = map.changeZoom;
 window.resetView = map.resetView;
+window.syncMap = map.syncMap;
+window.syncWorldView = map.syncWorldView;
 
 // Token
-window.openCreationModal = tokens.openCreationModal;
-window.spawnToken = tokens.spawnToken;
-window.spawnProp = tokens.spawnProp;
-window.updateHpVisuals = tokens.updateHpVisuals;
+window.addToInitiative = tokens.addToInitiative;
+window.removeFromInitiative = tokens.removeFromInitiative;
+window.renderInitiative = tokens.renderInitiative;
+window.nextTurn = tokens.nextTurn;
+window.clearInitiative = tokens.clearInitiative;
+window.syncInitiativeToPlayer = player.syncInitiativeToPlayer;
 
 // Modali (Schede)
 window.openSheet = modals.openSheet;

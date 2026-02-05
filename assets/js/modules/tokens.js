@@ -352,20 +352,23 @@ export function handlePropUpload(file) {
 /* --- GESTIONE INIZIATIVA  --- */
 
 export function addToInitiative(id, val) {
-    // 1. Cerca se il token è già in iniziativa
+    // 1. Cerca se esiste già
     const existing = state.initiative.find(i => i.id === id);
-    
+    const token = state.tokens[id]; // Recuperiamo i dati del token per il nome
+    const name = token ? token.name : "Sconosciuto";
+
     if (existing) {
-        existing.val = val; // Aggiorna il valore
+        existing.val = val;
+        existing.name = name; // Aggiorniamo anche il nome per sicurezza
     } else {
-        // Aggiunge nuovo
-        state.initiative.push({ id: id, val: val, active: false });
+        // Aggiungiamo nuovo con ID, Valore e NOME
+        state.initiative.push({ id: id, val: val, name: name, active: false });
     }
     
-    // 2. Ordina automaticamente (dal più alto al più basso)
+    // 2. Ordina
     state.initiative.sort((a, b) => b.val - a.val);
     
-    // 3. Renderizza e Sincronizza
+    // 3. Renderizza
     renderInitiative();
     syncInitiativeToPlayer();
 }
@@ -376,28 +379,40 @@ export function removeFromInitiative(id) {
     syncInitiativeToPlayer();
 }
 
+/* In assets/js/modules/tokens.js */
 export function renderInitiative() {
-    const l = document.getElementById('init-list');
-    if (!l) return;
-    
-    l.innerHTML = "";
-    
-    state.initiative.forEach(i => {
-        const d = state.tokens[i.id];
-        if (!d) return; // Se il token è stato cancellato, saltalo
-        
+    const panel = document.getElementById('init-panel'); // Il contenitore esterno
+    const list = document.getElementById('init-list');   // La lista interna
+    if(!list || !panel) return;
+
+    // Se l'iniziativa è vuota, nascondi tutto il pannello e uscì
+    if (state.initiative.length === 0) {
+        panel.style.display = 'none';
+        return;
+    }
+
+    // Altrimenti, mostra il pannello e genera la lista
+    panel.style.display = 'block';
+    list.innerHTML = "";
+
+    state.initiative.forEach(init => {
+        const d = state.tokens[init.id];
+        if(!d) return;
+
         const row = document.createElement('div');
-        row.className = `init-row ${i.active ? 'active-turn' : ''}`;
+        row.className = `init-row ${init.active ? 'active' : ''}`;
         
         row.innerHTML = `
-            <span class="init-val">${i.val}</span>
-            <span class="init-name">${d.name}</span>
-            <div class="init-ctrls">
-                <button class="mini-btn btn-del" onclick="window.removeFromInitiative(${i.id})">x</button>
-            </div>
+            <span class="init-val">${init.val}</span>
+            <img src="${d.image}" class="init-img">
+            <span style="flex-grow:1">${d.name}</span>
+            <button class="mini-btn btn-del" onclick="removeFromInitiative('${init.id}')">x</button>
         `;
-        l.appendChild(row);
+        list.appendChild(row);
     });
+
+    // Sincronizza i giocatori
+    import('./player.js').then(m => m.syncInitiativeToPlayer());
 }
 
 // Funzione opzionale per gestire i turni (Next Turn)
@@ -464,3 +479,6 @@ export function toggleQuickAttacks(id, tokenEl) {
 
     tokenEl.appendChild(panel);
 }
+
+// Espone la funzione per essere chiamata dall'HTML onclick="..."
+window.removeFromInitiative = removeFromInitiative;

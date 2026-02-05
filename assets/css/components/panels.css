@@ -28,23 +28,33 @@
 
 /* INIZIATIVA */
 #init-panel {
-    position: absolute; top: 80px; left: 10px;
-    width: 200px;
-    background: var(--bg-panel) !important;
-    border: 2px solid var(--border-main) !important;
-    border-radius: 8px; z-index: 1500;
-    display: flex; flex-direction: column;
-    max-height: 500px;
+    position: fixed;
+    top: 80px; /* Sotto la toolbar */
+    left: 20px;
+    width: 220px;
+    background-color: #fdf1dc; /* Crema Pergamena */
+    border: 3px solid #922610; /* Rosso D&D */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 1500;
+    font-family: 'Georgia', serif;
+    padding: 10px;
 }
 
 #init-header {
-    padding: 10px;
-    background: var(--bg-panel-dark);
-    font-weight: bold; color: var(--accent-red);
-    border-bottom: 1px solid var(--border-main);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 8px; cursor: move; font-variant: small-caps;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #922610;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+}
+
+#init-header span {
+    color: #922610;
+    font-weight: bold;
+    font-variant: small-caps;
+    font-size: 1.1em;
 }
 
 #init-header > div {
@@ -55,24 +65,51 @@
     gap: 5px; width: 100%;
 }
 
-#init-list { overflow-y: auto; flex: 1; background-color: var(--bg-panel) !important; }
 
+#init-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
 .init-row {
-    display: flex; align-items: center; padding: 8px 10px;
-    border-bottom: 1px solid #bdac92;
-    background-color: rgba(255,255,255,0.3) !important;
-    color: var(--text-main) !important;
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #922610; /* Linea continua */
+    color: #333;
 }
 
+.init-row:last-child {
+    border-bottom: none;
+}
+
+.init-row.active {
+    background-color: rgba(146, 38, 16, 0.1);
+    font-weight: bold;
+    border-left: 3px solid #922610;
+    padding-left: 5px;
+}
 .init-row.active-turn {
     background-color: rgba(146, 38, 16, 0.15) !important;
     border-left: 5px solid var(--accent-red);
 }
 
 .init-val {
-    font-weight: bold; color: var(--accent-red) !important;
-    width: 30px; font-size: 16px; text-align: center;
+    color: #922610; /* Numero Rosso */
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 20px;
 }
+
+/* Icona Circolare */
+.init-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%; /* Icona Circolare */
+    border: 1px solid #922610;
+    margin-right: 8px;
+    object-fit: cover;
+}
+
 .init-name {
     font-family: var(--font-main); font-size: 15px; font-weight: 900;
     color: #000; letter-spacing: 0.5px; margin-left: 8px; flex: 1;
