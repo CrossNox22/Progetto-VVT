@@ -78,12 +78,12 @@ export function updateClockUI() {
     
     const cd = document.getElementById('calendar-display'); 
     if(cd) cd.textContent = `Giorno ${dom}`;
-
+    
     // --- AGGIUNTA PER IL BUG CARICAMENTO ---
     // Sincronizziamo i campi di input del Master con i dati dello stato
     const monthInput = document.getElementById('month-name');
     if(monthInput) monthInput.value = state.time.monthName;
-
+    
     const yearInput = document.getElementById('year-num');
     if(yearInput) yearInput.value = state.time.year;
     // ---------------------------------------
@@ -105,22 +105,22 @@ export function syncClockToPlayer() {
         pc.className = 'p-clock-overlay'; 
         state.playerWin.document.body.appendChild(pc); 
     }
-
+    
     // Qui abbiamo tolto #FF9800 e messo #922610 ovunque per sicurezza
-    pc.innerHTML = `<div style="font-size:24px; color:#922610;">${h<10?'0'+h:h}:${m<10?'0'+m:m}</div>
-                    <div style="font-size:16px; color:#922610;">${state.time.monthName} ${state.time.year}</div>
-                    <div style="font-size:14px; color:#922610;">Giorno ${dom}</div>`;
+    pc.innerHTML = `<div style="font-size:24px; color:#922610;  font-family: 'Cinzel', serif;">${h<10?'0'+h:h}:${m<10?'0'+m:m}</div>
+                    <div style="font-size:16px; color:#922610;  font-family: 'Cinzel', serif;">${state.time.monthName} ${state.time.year}</div>
+                    <div style="font-size:14px; color:#922610;  font-family: 'Cinzel', serif;">Giorno ${dom}</div>`;
     updateSkyColor();
 }
 
 export function addTime(hours) {
     const minutiPerMese = 28 * 1440; // 28 giorni in minuti
     const vecchioIndiceMese = Math.floor(state.time.minutes / minutiPerMese);
-
+    
     state.time.minutes += hours * 60;
-
+    
     const nuovoIndiceMese = Math.floor(state.time.minutes / minutiPerMese);
-
+    
     // Se il calcolo dei mesi è aumentato, chiediamo il nuovo nome
     if (nuovoIndiceMese > vecchioIndiceMese) {
         const nuovoNome = prompt("È passato un mese! Inserisci il nome del nuovo mese:", state.time.monthName);
@@ -133,7 +133,7 @@ export function addTime(hours) {
             }
         }
     }
-
+    
     updateClockUI();
     syncClockToPlayer();
 }
@@ -163,17 +163,17 @@ export function performLongRest() {
     const label = state.time.isGritty ? "7 giorni" : "8 ore";
     
     if(!confirm(`Eseguire un Riposo Lungo? (Ripristina HP e Slot a TUTTI i token e avanza di ${label})`)) return;
-
+    
     // 1. Avanza il tempo
     addTime(hours);
-
+    
     // 2. Ripristina tutti i Token
     Object.values(state.tokens).forEach(t => {
         t.hpCurrent = t.hpMax;
         if(t.spellSlots) {
             t.spellSlots.forEach(s => s.used = 0);
         }
-
+        
         // Aggiorna UI Master
         const el = document.getElementById(`tok-${t.id}`);
         if(el) {
@@ -183,7 +183,7 @@ export function performLongRest() {
                 if(sb) m.updateSpellBoxDisplay(sb, t);
             });
         }
-
+        
         // Sincronizza Giocatore
         import('./player.js').then(m => m.syncTokenToPlayer(t.id));
     });
@@ -258,7 +258,7 @@ export function syncWeatherToPlayer() {
     }
     const cw = state.time.currentWeather;
     if(!cw) return;
-
+    
     if(cw === 'weather-snow' || cw === 'weather-fog') {
         if(overlay) overlay.className = cw;
     } else if (cw === 'weather-rain') {
@@ -283,16 +283,17 @@ export function syncWeatherToPlayer() {
     }
 }
 
+// Toggle dropdown mobile
 const burgerBtn = document.getElementById('burger-btn');
-const dropdown = document.querySelector('.burger-dropdown');
+const burgerDropdown = document.querySelector('.burger-dropdown');
 
 burgerBtn.addEventListener('click', () => {
-    dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+    burgerDropdown.style.display = burgerDropdown.style.display === 'flex' ? 'none' : 'flex';
 });
 
-// chiude il menu se clicchi fuori
+// Chiude il menu se clicchi fuori
 document.addEventListener('click', (e) => {
-    if (!burgerBtn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.style.display = 'none';
+    if (!burgerBtn.contains(e.target) && !burgerDropdown.contains(e.target)) {
+        burgerDropdown.style.display = 'none';
     }
 });

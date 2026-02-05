@@ -32,16 +32,16 @@
     </div>
     
     <div id="toolbar">
-        <strong style="font-size: 1.2em; color: #FF9800; margin-right: 15px;">DM CONSOLE</strong>
+        <strong class="desktop-title">DM CONSOLE</strong>
         
         <!-- Desktop buttons -->
         <div class="toolbar-group desktop-buttons">
-            <button class="primary" onclick="openPlayerWindow()">📺 VISTA GIOCATORI</button>
+            <button class="primary" onclick="openPlayerWindow()">📺 PLAYER</button>
             <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
             <button onclick="document.getElementById('upload-token').click()">♟️ Token</button>
             <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
-            <button onclick="toggleClock()">🕰️ Orologio</button>
-            <button onclick="toggleMusic()">🎵 Musica</button>
+            <button onclick="toggleClock()">🕰️ CLOCK</button>
+            <button onclick="toggleMusic()">🎵 Music</button>
             <button onclick="toggleWeather()">⛈️ Meteo</button>
             <button class="save-session" onclick="downloadSession()">💾 SALVA</button>
             <button onclick="changeZoom(0.1)">➕</button>
@@ -53,7 +53,7 @@
         <div class="mobile-menu">
             <button id="burger-btn">&#9776;</button> <!-- icona hamburger -->
             <div class="burger-dropdown">
-                <button onclick="openPlayerWindow()">📺 VISTA GIOCATORI</button>
+                <button onclick="openPlayerWindow()">📺 PLAYER</button>
                 <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
                 <button onclick="document.getElementById('upload-token').click()">♟️ Token</button>
                 <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
@@ -67,6 +67,13 @@
             </div>
         </div>
     </div>
+    
+    <!-- File inputs nascosti -->
+    <input type="file" id="upload-map" accept="image/*" style="display:none">
+    <input type="file" id="upload-token" accept=".dnd,.json" style="display:none">
+    <input type="file" id="upload-prop" accept="image/*" style="display:none">
+    <input type="file" id="upload-session" accept=".ses,.json" style="display:none">
+    
     
     <div id="game-area">
         <div id="sky-layer">

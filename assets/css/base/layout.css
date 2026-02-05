@@ -135,17 +135,17 @@ body.loading #log-panel {
         height: auto;
         padding: 10px;
     }
-
+    
     .toolbar-group {
         justify-content: center;
         width: 100%;
         margin-bottom: 5px;
     }
-
+    
     #game-area {
         height: calc(100vh - 100px);
     }
-
+    
     .desktop-buttons {
         display: none !important;
         /* forza nascondere pulsanti desktop */
@@ -157,6 +157,7 @@ body.loading #log-panel {
         align-items: center;
     }
 }
+
 
 /* Desktop: mostrano i pulsanti */
 .desktop-buttons {
@@ -170,6 +171,7 @@ body.loading #log-panel {
     position: relative;
 }
 
+/* Dropdown menu */
 .burger-dropdown {
     display: none;
     position: absolute;
@@ -179,9 +181,11 @@ body.loading #log-panel {
     border: 2px solid #922610;
     border-radius: 6px;
     flex-direction: column;
-    min-width: 150px;
+    min-width: 160px;
     z-index: 3000;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-family: 'Cinzel', serif;
+    /* font coerente con il resto */
 }
 
 .burger-dropdown button {
@@ -196,5 +200,19 @@ body.loading #log-panel {
 .burger-dropdown button:hover {
     background-color: #922610;
     color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    
+    .desktop-buttons,
+    .desktop-title {
+        display: none;
+    }
+    
+    .mobile-menu {
+        display: flex;
+        align-items: center;
+    }
 }
 
