@@ -1,0 +1,121 @@
+/* layout.css - Struttura, Posizioni e Z-Index */
+
+/* TOOLBAR */
+#toolbar {
+    height: 60px;
+    background-color: #fdf1dc;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 3px solid #922610;
+    z-index: 2000;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+#toolbar strong {
+    color: #922610 !important;
+    font-variant: small-caps;
+    font-size: 1.4em !important;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+}
+
+.separator {
+    width: 1px;
+    height: 30px;
+    background: #555;
+    margin: 0 10px;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* AREA DI GIOCO */
+#game-area {
+    position: relative;
+    width: 100vw;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+    cursor: grab;
+    z-index: 5;
+}
+
+#game-area:active { cursor: grabbing; }
+
+/* LAYERS (Mappa, Cielo, Meteo) */
+#world-layer {
+    position: absolute;
+    top: 0; left: 0;
+    transform-origin: 0 0;
+    z-index: 10;
+}
+
+#map-img {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+.map-layer { display: block; pointer-events: none; }
+
+#sky-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; /* Dietro la mappa se PNG trasparente, o gestito via JS */
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#weather-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2; /* Sopra la mappa, sotto i token */
+}
+
+#rain-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 3; /* Sopra la mappa e la nebbia, sotto i token */
+    pointer-events: none;
+    display: none;
+}
+
+#storm-flash {
+    display: none;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: white;
+    opacity: 0;
+    z-index: 1002;
+    pointer-events: none;
+}
+
+/* START SCREEN */
+#start-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(10, 10, 10, 0.95);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.start-content { text-align: center; max-width: 600px; }
+.big-btn { padding: 15px 30px; font-size: 18px; margin: 10px; width: 250px; justify-content: center; display: inline-flex; }
+
+/* Nasconde UI durante il caricamento */
+body.loading #toolbar, 
+body.loading #dice-panel, 
+body.loading #log-panel {
+    display: none !important;
+}

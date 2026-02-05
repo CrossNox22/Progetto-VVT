@@ -1,0 +1,92 @@
+/* dice.css - Pannello Dadi e Log */
+
+#dice-panel {
+    position: absolute; bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 30, 0.9);
+    padding: 15px 30px; border-radius: 20px;
+    display: flex; gap: 15px; align-items: center;
+    border: 1px solid #555; z-index: 2500;
+}
+
+#dice-panel label {
+    color: #ffffff !important; font-weight: bold;
+    text-shadow: 0 0 3px #000;
+    font-family: var(--font-ui); font-size: 13px !important;
+}
+
+.die-btn {
+    width: 50px; height: 50px;
+    background: #444; color: #fff;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; font-size: 14px;
+    cursor: pointer; transition: all 0.2s;
+    text-shadow: 1px 1px 2px black;
+}
+.die-btn:hover { background: #FF9800; color: #000; transform: translateY(-3px); }
+
+.mod-input {
+    width: 50px; padding: 5px; border-radius: 5px;
+    border: 2px solid var(--accent-red);
+    background: #fff !important; color: #000 !important;
+    text-align: center; font-weight: bold;
+}
+
+/* LOG */
+#log-panel {
+    position: absolute; bottom: 100px; left: 20px;
+    width: 300px; max-height: 300px;
+    overflow-y: hidden; pointer-events: none;
+    display: flex; flex-direction: column-reverse;
+    z-index: 2400;
+}
+
+.log-entry {
+    background: var(--bg-panel); color: var(--text-main);
+    padding: 10px; margin-top: 5px; border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid #d4c4a9;
+    border-left: 5px solid #555;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    pointer-events: auto; font-family: var(--font-main);
+    animation: slideIn 0.3s ease-out;
+}
+
+.log-entry.crit-success { border-left-color: #2E7D32; background: #E8F5E9; }
+.log-entry.crit-fail { border-left-color: #C62828; background: #FFEBEE; }
+.log-entry.damage-log { border-left-color: var(--accent-red); }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ANIMAZIONE DADO AL CENTRO */
+#dice-overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 5000; display: none;
+    align-items: center; justify-content: center;
+    pointer-events: none;
+}
+#anim-die {
+    width: 150px; height: 150px;
+    background: #FF9800; color: #000;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 60px; font-weight: bold;
+    border: 5px solid #fff;
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.8);
+}
+.rolling-anim { animation: shake 0.5s infinite; }
+.landed-anim { animation: pulse 0.5s ease-out; transform: scale(1.2); background: #4CAF50 !important; color: white !important; }
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    20% { transform: translate(-3px, 0px) rotate(5deg); }
+    40% { transform: translate(1px, -1px) rotate(5deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    80% { transform: translate(-1px, -1px) rotate(5deg); }
+    100% { transform: translate(1px, -2px) rotate(-5deg); }
+}
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }

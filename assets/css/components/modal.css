@@ -1,0 +1,215 @@
+/* modal.css - Finestre e Statblock */
+
+.modal {
+    display: none; position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 3000; align-items: center; justify-content: center;
+}
+
+/* STATBLOCK CARD (Stile Pergamena) */
+/* STATBLOCK CARD (Stile Pergamena) */
+.statblock-card {
+    background-color: var(--bg-panel);
+    color: var(--text-main);              /* Testo normale nero */
+    font-family: var(--font-main);
+    padding: 20px;
+    border: 1px solid #d4c4a9;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    width: 450px; max-height: 85vh; overflow-y: auto;
+    position: relative;
+}
+
+/* --- FIX COLORI ROSSI (Manuale dei Mostri) --- */
+
+/* 1. Etichette in grassetto (CA, HP, Velocità, Sensi, Lingue, Sfida) */
+.statblock-card strong, 
+.statblock-card b {
+    color: var(--accent-red) !important; /* <--- Questo è il trucco! */
+}
+
+/* 2. Titoli delle sezioni (Azioni, Incantesimi, Note) */
+.statblock-card h3, 
+.statblock-card h4, 
+.sb-section-title {
+    color: var(--accent-red) !important; /* Anche i titoli diventano rossi */
+    border-bottom-color: #d4c4a9;
+    font-variant: small-caps;
+}
+
+/* 3. La linea divisoria sfumata */
+.tapered-rule {
+    display: block; height: 2px;
+    background: linear-gradient(to right, var(--accent-red) 0%, var(--accent-red) 80%, transparent 100%);
+    margin: 10px 0;
+}
+
+.sb-header { border-bottom: 2px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 10px; }
+.sb-title { font-size: 24px; font-weight: bold; font-variant: small-caps; color: var(--accent-red); margin: 0; }
+.sb-subtitle { font-size: 12px; font-style: italic; color: #333; }
+
+.tapered-rule {
+    display: block; height: 2px;
+    background: linear-gradient(to right, var(--accent-red) 0%, var(--accent-red) 80%, transparent 100%);
+    margin: 10px 0;
+}
+
+.sb-section-title {
+    font-variant: small-caps; font-weight: bold;
+    color: var(--accent-red);
+    border-bottom: 1px solid #d4c4a9; margin-top: 10px;
+}
+
+.ability-grid { display: grid; grid-template-columns: repeat(6, 1fr); text-align: center; color: var(--accent-red); margin: 10px 0; }
+.ability-score { font-size: 16px; font-weight: bold; display: block; }
+
+.sb-input {
+    background: transparent; border: none;
+    border-bottom: 1px dashed var(--accent-red);
+    color: var(--text-main); font-family: inherit; width: 100%;
+}
+.sb-input:focus { outline: none; border-bottom: 1px solid var(--accent-red); }
+
+/* INVENTARIO DENTRO IL MODAL */
+.statblock-card .inv-row {
+    border-bottom: 1px solid var(--accent-red); padding: 5px 0;
+    display: flex; align-items: center;
+}
+.statblock-card .inv-name {
+    color: #000; font-weight: bold; font-family: var(--font-ui);
+    background: transparent; border: none; font-size: 14px;
+}
+.statblock-card .inv-qty {
+    color: var(--accent-red); font-weight: bold;
+    background: transparent; border: none; text-align: center;
+}
+
+/* GRIMORIO DENTRO IL MODAL */
+.statblock-card .spell-row {
+    border-bottom: 1px solid var(--accent-red); padding: 8px 0;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.statblock-card .spell-circle {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid #555; background-color: rgba(255,255,255,0.5);
+    cursor: pointer; margin-right: 3px;
+}
+.statblock-card .spell-circle.used {
+    background-color: var(--accent-red); border-color: #7a200d;
+}
+
+.modal-footer { margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px; }
+
+/* --- FIX CLASSI MANCANTI (Per compatibilità col vecchio JS) --- */
+
+/* La riga intera diventa rossa e grassetto (es. "Classe Armatura") */
+.sb-row { 
+    font-size: 14px; 
+    margin-bottom: 3px; 
+    color: var(--accent-red) !important; /* Forza il rosso */
+    font-weight: bold; 
+}
+
+/* Il valore numerico torna nero e normale (es. "10") */
+.sb-val { 
+    color: var(--text-main) !important; /* Torna nero */
+    font-weight: normal; 
+}
+
+/* Fix specifico per l'input dentro le righe (se presente) */
+.sb-input {
+    color: var(--text-main);
+    font-weight: normal;
+}
+
+/* --- FIX TITOLI AZIONI E INCANTESIMI (Mancava questa classe!) --- */
+
+.action-header {
+    color: var(--accent-red) !important; /* Il Rosso D&D (#922610) */
+    font-size: 18px;
+    font-variant: small-caps;            /* Maiuscoletto elegante */
+    font-weight: bold;
+    border-bottom: 1px solid #d4c4a9;    /* Linea sabbia sotto */
+    margin: 15px 0 5px 0;
+    display: block;                      /* Assicura che vada a capo */
+}
+
+/* Per sicurezza copriamo anche H3 e H4 se usati per le Note */
+.statblock-card h3, 
+.statblock-card h4 {
+    color: var(--accent-red) !important;
+    border-bottom: 1px solid #d4c4a9;
+    font-variant: small-caps;
+}
+
+/* =======================================================
+FIX RAPIDO LARGHEZZE ATTACCHI (Aggiungi alla fine)
+======================================================= */
+
+/* 1. Impedisce alla riga di andare a capo */
+.statblock-card div[style*="flex"] {
+    flex-wrap: nowrap !important;
+}
+
+/* 2. Il Nome dell'attacco si prende tutto lo spazio rimasto */
+.statblock-card div[style*="flex"] input[type="text"]:nth-of-type(1) {
+    flex: 1 !important;
+    min-width: 50px;
+}
+
+/* 3. La casella del Bonus (+2) piccola e fissa */
+.statblock-card div[style*="flex"] input[type="text"]:nth-of-type(2) {
+    width: 35px !important;
+    flex: 0 0 auto !important; /* Non si ingrandisce mai */
+    text-align: center;
+}
+
+/* 4. LA CASELLA DANNI (Il fix che hai chiesto) */
+.statblock-card div[style*="flex"] input[type="text"]:nth-of-type(3) {
+    width: 60px !important;    /* Larghezza fissa e ridotta */
+    flex: 0 0 auto !important; /* Blocca l'espansione (stop al glide) */
+    text-align: right;         /* Testo allineato a destra vicino al bottone */
+}
+/* =======================================================
+FIX DEFINITIVO COLORE (FORZA BRUTA)
+======================================================= */
+
+/* 1. Applica il rosso a TUTTO ciò che sta nell'header (h4, div, span, label, ecc.) */
+.statblock-card h4, 
+.action-header,
+.statblock-card h4 *, 
+.action-header * { 
+    color: var(--accent-red) !important;
+}
+
+/* 2. Eccezione: Il numero dentro l'input deve rimanere Nero (o cambia in rosso se preferisci) */
+.statblock-card h4 input,
+.action-header input {
+    color: #000 !important; 
+    border-color: var(--accent-red) !important; /* Già che ci siamo, bordo rosso */
+}
+
+/* ==========================================================================
+FIX FORZATO BOTTONE CHIUDI (INVENTARIO)
+========================================================================== */
+
+/* 1. Reset e Colore Rosso D&D */
+#inventory-modal .modal-footer button,      /* Inventario */
+#spell-modal .modal-footer button,          /* Grimorio */
+#sheet-modal .modal-footer button {         /* Scheda */
+    background: #922610 !important;         /* 'background' sovrascrive anche i gradienti */
+    background-color: #922610 !important;   /* Sicurezza */
+    color: white !important;
+    border: 1px solid #5a1005 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+}
+
+/* 2. Effetto Hover (Più scuro quando passi sopra) */
+#inventory-modal .modal-footer button:hover,
+#spell-modal .modal-footer button:hover,
+#sheet-modal .modal-footer button:hover {
+    background: #721c0b !important;
+    cursor: pointer;
+}
