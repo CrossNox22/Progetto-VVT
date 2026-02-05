@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>Piero DM Console - Final Stable</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">   
 </head>
 
@@ -16,7 +19,12 @@
             
             <div class="start-buttons">
                 <button class="primary big-btn" onclick="startNewSession()">🗺️ NUOVA SESSIONE</button>
+<<<<<<< HEAD
                 <button class="load-session big-btn" onclick="document.getElementById('upload-session').click()">📂 CARICA SESSIONE (.ses)</button>
+=======
+                <button class="load-session big-btn" onclick="document.getElementById('upload-session').click()">📂 CARICA SESSIONE</button>
+                <button class="big-btn" onclick="openCreationModal('hero'); closeModal('start-screen');">🛠️ CREA TOKEN</button>
+>>>>>>> 97cf6a0543f4edaecc25e704d4e7f296764e4d3f
             </div>
             
             <div style="margin-top: 30px; font-size: 12px; color: #555;">v2.0 - Delta Stable</div>
@@ -28,14 +36,9 @@
     </div>
     
     <div id="toolbar">
-        <strong style="font-size: 1.2em; color: #FF9800; margin-right: 15px;">PIERO DM CONSOLE</strong>
-        <button class="primary" onclick="openPlayerWindow()">📺 VISTA GIOCATORI</button>
-        <div class="separator"></div>
-        <input type="file" id="upload-map" accept="image/*" style="display:none">
-        <input type="file" id="upload-token" accept=".dnd,.json" style="display:none">
-        <input type="file" id="upload-prop" accept="image/*" style="display:none">
-        <input type="file" id="upload-session" accept=".ses,.json" style="display:none">
+        <strong class="desktop-title">DM CONSOLE</strong>
         
+<<<<<<< HEAD
         <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
 
 <div class="submenu-wrapper">
@@ -64,11 +67,48 @@
         <div class="separator"></div>
         
         <div class="toolbar-group">
+=======
+        <!-- Desktop buttons -->
+        <div class="toolbar-group desktop-buttons">
+            <button class="primary" onclick="openPlayerWindow()">📺 PLAYER</button>
+            <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
+            <button onclick="document.getElementById('upload-token').click()">♟️ Token</button>
+            <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
+            <button onclick="toggleClock()">🕰️ CLOCK</button>
+            <button onclick="toggleMusic()">🎵 Music</button>
+            <button onclick="toggleWeather()">⛈️ Meteo</button>
+            <button class="save-session" onclick="downloadSession()">💾 SALVA</button>
+>>>>>>> 97cf6a0543f4edaecc25e704d4e7f296764e4d3f
             <button onclick="changeZoom(0.1)">➕</button>
             <button onclick="changeZoom(-0.1)">➖</button>
             <button onclick="resetView()">Reset</button>
         </div>
+        
+        <!-- Mobile burger menu -->
+        <div class="mobile-menu">
+            <button id="burger-btn">&#9776;</button> <!-- icona hamburger -->
+            <div class="burger-dropdown">
+                <button onclick="openPlayerWindow()">📺 PLAYER</button>
+                <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
+                <button onclick="document.getElementById('upload-token').click()">♟️ Token</button>
+                <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
+                <button onclick="toggleClock()">🕰️ Orologio</button>
+                <button onclick="toggleMusic()">🎵 Musica</button>
+                <button onclick="toggleWeather()">⛈️ Meteo</button>
+                <button class="save-session" onclick="downloadSession()">💾 SALVA</button>
+                <button onclick="changeZoom(0.1)">➕</button>
+                <button onclick="changeZoom(-0.1)">➖</button>
+                <button onclick="resetView()">Reset</button>
+            </div>
+        </div>
     </div>
+    
+    <!-- File inputs nascosti -->
+    <input type="file" id="upload-map" accept="image/*" style="display:none">
+    <input type="file" id="upload-token" accept=".dnd,.json" style="display:none">
+    <input type="file" id="upload-prop" accept="image/*" style="display:none">
+    <input type="file" id="upload-session" accept=".ses,.json" style="display:none">
+    
     
     <div id="game-area">
         <div id="sky-layer">

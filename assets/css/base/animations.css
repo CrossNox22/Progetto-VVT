@@ -1,7 +1,5 @@
 /* animations.css - Keyframes ed Effetti Atmosferici */
 
-/* --- DEFINIZIONE ANIMAZIONI (KEYFRAMES) --- */
-
 @keyframes rain {
     0% { background-position: 0% 0%; }
     100% { background-position: 10px 100%; }

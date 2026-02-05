@@ -1,125 +1,134 @@
-/* layout.css - Struttura, Posizioni e Z-Index */
+/* layout.css - Struttura, Posizioni e Z-Index (Responsive) */
 
 /* TOOLBAR */
 #toolbar {
     height: 60px;
     background-color: #fdf1dc;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    padding: 0 20px;
+    justify-content: space-between;
+    padding: 0 10px;
     border-bottom: 3px solid #922610;
     z-index: 2000;
     position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 #toolbar strong {
     color: #922610 !important;
     font-variant: small-caps;
-    font-size: 1.4em !important;
-    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+    font-size: 1.2em;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
 }
 
+/* Separatore */
 .separator {
     width: 1px;
     height: 30px;
     background: #555;
-    margin: 0 10px;
+    margin: 0 5px;
+    /* più compatto per mobile */
 }
 
+/* Gruppi nella toolbar */
 .toolbar-group {
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-wrap: wrap;
+    /* consente ai pulsanti di andare a capo se necessario */
 }
 
 /* AREA DI GIOCO */
 #game-area {
     position: relative;
-    width: 100vw;
+    width: 100%;
     height: calc(100vh - 60px);
     overflow: hidden;
     cursor: grab;
     z-index: 5;
 }
 
-#game-area:active { cursor: grabbing; }
+#game-area:active {
+    cursor: grabbing;
+}
 
 /* LAYERS (Mappa, Cielo, Meteo) */
 #world-layer {
     position: absolute;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     transform-origin: 0 0;
     z-index: 10;
+    width: 100%;
+    height: 100%;
 }
 
 #map-img {
     position: relative;
     z-index: 1;
     display: block;
+    max-width: 100%;
+    height: auto;
 }
-.map-layer { display: block; pointer-events: none; }
 
-#sky-layer {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0; /* Dietro la mappa se PNG trasparente, o gestito via JS */
+.map-layer {
+    display: block;
     pointer-events: none;
-    overflow: hidden;
 }
 
-#weather-layer {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 2; /* Sopra la mappa, sotto i token */
-}
-
-#rain-canvas {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 3; /* Sopra la mappa e la nebbia, sotto i token */
-    pointer-events: none;
-    display: none;
-}
-
+#sky-layer,
+#weather-layer,
+#rain-canvas,
 #storm-flash {
-    display: none;
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: white;
-    opacity: 0;
-    z-index: 1002;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
 }
 
 /* START SCREEN */
 #start-screen {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(10, 10, 10, 0.95);
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: opacity 0.5s ease;
+    padding: 20px;
 }
 
-.start-content { text-align: center; max-width: 600px; }
-.big-btn { padding: 15px 30px; font-size: 18px; margin: 10px; width: 250px; justify-content: center; display: inline-flex; }
+.start-content {
+    text-align: center;
+    max-width: 90%;
+}
+
+.big-btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    margin: 8px auto;
+    width: 80%;
+    max-width: 250px;
+    display: inline-flex;
+    justify-content: center;
+}
 
 /* Nasconde UI durante il caricamento */
-body.loading #toolbar, 
-body.loading #dice-panel, 
+body.loading #toolbar,
+body.loading #dice-panel,
 body.loading #log-panel {
     display: none !important;
 }
 
+<<<<<<< HEAD
 /* --- STILE SOTTOMENU TOKEN (D&D Style) --- */
 
 .submenu-dropdown {
@@ -170,3 +179,93 @@ body.loading #log-panel {
     transform: translateY(-1px); /* Piccolo effetto 3D */
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+=======
+/* MEDIA QUERY per schermi piccoli */
+@media (max-width: 768px) {
+    #toolbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+    
+    .toolbar-group {
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    #game-area {
+        height: calc(100vh - 100px);
+    }
+    
+    .desktop-buttons {
+        display: none !important;
+        /* forza nascondere pulsanti desktop */
+    }
+    
+    .mobile-menu {
+        display: flex !important;
+        /* forza apparire hamburger */
+        align-items: center;
+    }
+}
+
+
+/* Desktop: mostrano i pulsanti */
+.desktop-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+/* Mobile: burger menu nascosto di default */
+.mobile-menu {
+    display: none;
+    position: relative;
+}
+
+/* Dropdown menu */
+.burger-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #fdf1dc;
+    border: 2px solid #922610;
+    border-radius: 6px;
+    flex-direction: column;
+    min-width: 160px;
+    z-index: 3000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-family: 'Cinzel', serif;
+    /* font coerente con il resto */
+}
+
+.burger-dropdown button {
+    width: 100%;
+    padding: 8px 10px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.burger-dropdown button:hover {
+    background-color: #922610;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    
+    .desktop-buttons,
+    .desktop-title {
+        display: none;
+    }
+    
+    .mobile-menu {
+        display: flex;
+        align-items: center;
+    }
+}
+
+>>>>>>> 97cf6a0543f4edaecc25e704d4e7f296764e4d3f
