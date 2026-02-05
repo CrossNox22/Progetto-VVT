@@ -1,6 +1,7 @@
 /* tokens.js - Gestione Token, Personaggi e Oggetti Scenici */
 import { state } from './state.js';
 import { syncTokenToPlayer, syncPropToPlayer, removeTokenFromPlayer, removePropFromPlayer, syncInitiativeToPlayer } from './player.js';
+import { processTokenImport, createTokenFromForm } from './token-gen.js';
 
 // --- UTILITY PER BOTTONI ---
 function mkBtn(t, c, f) {
@@ -77,7 +78,15 @@ export function openCreationModal(type) {
     state.selection.creationType = type;
     const title = document.getElementById('creation-title');
     const slotDiv = document.getElementById('slot-input-col');
+
+    // 1. Mostra la finestra di creazione
+    document.getElementById('creation-modal').style.display = 'block';
+
+    // 2. NUOVO: Nasconde la schermata iniziale se è aperta
+    const startScreen = document.getElementById('start-screen');
+    if (startScreen) startScreen.style.display = 'none';
     
+    // Configura il titolo (Eroe o Nemico)
     if (type === 'enemy') {
         title.textContent = "Nuovo Nemico";
         title.style.color = "#FF9800";
@@ -88,14 +97,36 @@ export function openCreationModal(type) {
         slotDiv.style.display = "block";
     }
     
-    // Se non c'è un'immagine pronta, apre il selettore file
-    if (!state.selection.pendingImg) document.getElementById('upload-token').click();
+    // Abbiamo disattivato l'apertura automatica del file per permettere l'inserimento manuale
+    // if (!state.selection.pendingImg) document.getElementById('upload-token').click();
+}
+
+export function submitTokenCreation() {
+    // Recuperiamo il tipo (enemy/hero) salvato nello state
+    const type = state.selection.creationType || 'hero';
+    
+    // Recuperiamo l'immagine se l'utente ne ha caricata una "al volo" (opzionale)
+    // Se usi state.selection.pendingImg per gestire le immagini temporanee
+    const img = state.selection.pendingImg || null;
+
+    // Generiamo i dati
+    const tokenData = createTokenFromForm(type, img);
+
+    // Creiamo il token
+    spawnToken(tokenData);
+
+    // Pulizia (opzionale): Resetta i campi del form
+    if(document.getElementById('input-name')) document.getElementById('input-name').value = "";
+    if(document.getElementById('input-hp')) document.getElementById('input-hp').value = "";
+    if(document.getElementById('input-ac')) document.getElementById('input-ac').value = "";
+    
+    // Qui dovresti chiudere la modale se hai una funzione close()
+    // es. toggleCreationModal(false);
 }
 
 export function spawnToken(d) {
     if (state.tokens[d.id]) d.id = Date.now();
 
-    // Inizializzazione dati di base se mancanti
     if (!d.inventory) d.inventory = [];
     if (!d.spellSlots) d.spellSlots = [];
     if (!d.statuses) d.statuses = [];
@@ -114,7 +145,6 @@ export function spawnToken(d) {
     el.style.zIndex = d.z;
     if (d.scale) el.style.transform = `scale(${d.scale})`;
 
-    // Barra superiore controlli
     const cTop = document.createElement('div');
     cTop.className = 'token-controls';
     
@@ -126,12 +156,11 @@ export function spawnToken(d) {
 
     cTop.append(mkBtn('⚔️', 'btn-init', () => {
         const v = prompt("Iniziativa:");
-        if (v && window.addToInitiative) window.addToInitiative(d.id, parseInt(v));
+        if (v) addToInitiative(d.id, parseInt(v));
     }));
 
     cTop.append(mkBtn('✨', 'btn-cond', () => window.openStatusMenu && window.openStatusMenu(d.id)));
 
-    // Statistiche visibili ai giocatori
     let statIcon = d.isEnemy ? '📊' : '🛡️';
     let statClass = d.isEnemy ? 'btn-show-stats' : 'btn-stat';
     let bStat = mkBtn(statIcon, statClass, (e) => {
@@ -149,28 +178,24 @@ export function spawnToken(d) {
         if (confirm(`Eliminare ${d.name}?`)) {
             el.remove();
             delete state.tokens[d.id];
-            if (window.removeFromInitiative) window.removeFromInitiative(d.id);
+            removeFromInitiative(d.id);
             removeTokenFromPlayer(d.id);
         }
     }));
 
-    // Lato Sinistro (Scheda e Inventario)
     const cLeft = document.createElement('div');
     cLeft.className = 'controls-left';
     cLeft.append(mkBtn('📜', 'btn-sheet', () => window.openSheet && window.openSheet(d.id)));
     cLeft.append(mkBtn('🎒', 'btn-inv', () => window.openInventory && window.openInventory(d.id)));
 
-    // Lato Destro (Attacchi Rapidi)
     const cRight = document.createElement('div');
     cRight.className = 'controls-right';
-    cRight.append(mkBtn('⚔️', 'btn-quick-atk', e => window.toggleQuickAttacks && window.toggleQuickAttacks(d.id, el)));
+    cRight.append(mkBtn('⚔️', 'btn-quick-atk', e => toggleQuickAttacks(d.id, el)));
 
-    // Area Drag e Immagine
     const dr = document.createElement('div');
     dr.className = 'token-drag-area';
     dr.innerHTML = `<div class="token-name">${d.name}</div><img src="${d.image}" class="token-img">`;
 
-    // Overlay Status e HP
     const stOvr = document.createElement('div'); stOvr.className = 'status-overlay';
     const hp = document.createElement('div');
     hp.className = 'hp-bar-container';
@@ -191,7 +216,6 @@ export function spawnToken(d) {
     const resizer = document.createElement('div'); resizer.className = 'resize-handle'; resizer.textContent = '↘';
     setupResize(el, resizer, d.id, false);
 
-    // Box statistiche rapide (AC / Slots)
     const stRow = document.createElement('div');
     stRow.className = 'stats-row';
     const acBox = document.createElement('div');
@@ -300,43 +324,36 @@ export function updateSpellBoxDisplay(b, d) {
     b.title = `Slot: ${avail}/${total}`;
 }
 
-/* --- AGGIUNGI IN FONDO A assets/js/modules/tokens.js --- */
-
-// Funzione per gestire il file caricato
+// CORREZIONE CRUCIALE QUI: Riceviamo i dati da token-gen e chiamiamo noi spawnToken
 export function handleTokenUpload(file) {
     if(!file) return;
+
+    // --- AGGIUNTA FONDAMENTALE ---
+    // Resettiamo l'input file così il browser accetta di nuovo lo stesso file
+    const inputEl = document.getElementById('upload-token');
+    if (inputEl) inputEl.value = ''; 
+    // -----------------------------
+
     const r = new FileReader();
     r.onload = v => {
         try {
-            const d = JSON.parse(v.target.result);
-            
-            // Caso 1: È un Array di Token (es. salvataggio multiplo)
-            if(Array.isArray(d)) {
-                d.forEach(t => spawnToken(t));
-            } 
-            // Caso 2: È un file "Scena" vecchio (con mappa e tokens)
-            else if (d.tokens && Array.isArray(d.tokens)) {
-                d.tokens.forEach(t => spawnToken(t));
-                // Nota: se c'era una mappa nel file, per ora la ignoriamo per sicurezza
-            }
-            // Caso 3: È un singolo Token standard
-            else {
-                spawnToken(d);
+            const data = JSON.parse(v.target.result);
+            const tokenData = processTokenImport(data); 
+            if (tokenData) {
+                spawnToken(tokenData); 
             }
         } catch(e) {
             console.error(e);
-            alert("Errore file Token. Assicurati che sia un JSON valido.");
+            alert("Errore nel caricamento del file JSON.");
         }
     };
     r.readAsText(file);
 }
 
-// Già che ci siamo, gestiamo anche i Prop (Oggetti Scenici)
 export function handlePropUpload(file) {
     if(!file) return;
     const r = new FileReader();
     r.onload = v => {
-        // Genera un prop al centro dello schermo
         spawnProp({ 
             id: Date.now(), 
             image: v.target.result, 
@@ -349,49 +366,39 @@ export function handlePropUpload(file) {
     r.readAsDataURL(file);
 }
 
-/* --- GESTIONE INIZIATIVA  --- */
+/* --- GESTIONE INIZIATIVA --- */
 
 export function addToInitiative(id, val) {
-    // 1. Cerca se esiste già
     const existing = state.initiative.find(i => i.id === id);
-    const token = state.tokens[id]; // Recuperiamo i dati del token per il nome
+    const token = state.tokens[id];
     const name = token ? token.name : "Sconosciuto";
 
     if (existing) {
         existing.val = val;
-        existing.name = name; // Aggiorniamo anche il nome per sicurezza
+        existing.name = name;
     } else {
-        // Aggiungiamo nuovo con ID, Valore e NOME
         state.initiative.push({ id: id, val: val, name: name, active: false });
     }
     
-    // 2. Ordina
     state.initiative.sort((a, b) => b.val - a.val);
-    
-    // 3. Renderizza
     renderInitiative();
-    syncInitiativeToPlayer();
 }
 
 export function removeFromInitiative(id) {
     state.initiative = state.initiative.filter(i => i.id !== id);
     renderInitiative();
-    syncInitiativeToPlayer();
 }
 
-/* In assets/js/modules/tokens.js */
 export function renderInitiative() {
-    const panel = document.getElementById('init-panel'); // Il contenitore esterno
-    const list = document.getElementById('init-list');   // La lista interna
+    const panel = document.getElementById('init-panel');
+    const list = document.getElementById('init-list');
     if(!list || !panel) return;
 
-    // Se l'iniziativa è vuota, nascondi tutto il pannello e uscì
     if (state.initiative.length === 0) {
         panel.style.display = 'none';
         return;
     }
 
-    // Altrimenti, mostra il pannello e genera la lista
     panel.style.display = 'block';
     list.innerHTML = "";
 
@@ -411,74 +418,65 @@ export function renderInitiative() {
         list.appendChild(row);
     });
 
-    // Sincronizza i giocatori
-    import('./player.js').then(m => m.syncInitiativeToPlayer());
+    if (typeof syncInitiativeToPlayer === 'function') {
+        syncInitiativeToPlayer();
+    }
 }
 
-// Funzione opzionale per gestire i turni (Next Turn)
 export function nextTurn() {
     if(state.initiative.length === 0) return;
-    
     let idx = state.initiative.findIndex(i => i.active);
     if(idx > -1) state.initiative[idx].active = false;
-    
-    // Passa al prossimo (o torna al primo)
     const nextIdx = (idx + 1) % state.initiative.length;
     state.initiative[nextIdx].active = true;
-    
     renderInitiative();
-    syncInitiativeToPlayer();
 }
 
 export function clearInitiative() {
     state.initiative = [];
     renderInitiative();
-    syncInitiativeToPlayer();
 }
-
-/* --- (Gestione Attacchi Rapidi) --- */
 
 export function toggleQuickAttacks(id, tokenEl) {
     let panel = tokenEl.querySelector('.quick-attack-panel');
-    
-    if (panel) {
-        panel.remove();
-        return;
-    }
-
+    if (panel) { panel.remove(); return; }
     document.querySelectorAll('.quick-attack-panel').forEach(p => p.remove());
 
     const d = state.tokens[id];
-    if (!d.attacks || d.attacks.length === 0) {
-        alert("Nessun attacco configurato.");
-        return;
-    }
+    if (!d.attacks || d.attacks.length === 0) { alert("Nessun attacco configurato."); return; }
 
     panel = document.createElement('div');
     panel.className = 'quick-attack-panel';
-    // Stile del pannello
     panel.style.cssText = "position:absolute; left:110%; top:0; background:#f4e4bc; border:2px solid #922610; padding:5px; width:180px; z-index:100; border-radius:5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5);";
-    
     panel.innerHTML = `<div style="font-weight:bold; color:#922610; border-bottom:1px solid #922610; margin-bottom:5px; font-variant:small-caps;">Attacchi Rapidi</div>`;
     
     d.attacks.forEach(atk => {
         const row = document.createElement('div');
         row.className = 'qa-row';
         row.style.cssText = "margin-bottom: 5px; border-bottom: 1px dotted #bdaea5; padding-bottom: 5px;";
-        
         row.innerHTML = `
             <div style="font-weight:bold; font-size:13px; margin-bottom: 3px; color:#000;">${atk.name}</div>
             <div style="display:flex; gap:5px;">
-                <button class="qa-btn hit" style="flex:1; background:#4CAF50; color:white; border:none; border-radius:3px; cursor:pointer; padding: 4px; font-weight:bold; display: flex; justify-content: center; align-items: center;" onclick="window.rollAttackAction('hit', '${atk.hit}', '${atk.name}')">TxC ${atk.hit}</button>
-                
-                <button class="qa-btn dmg" style="flex:1; background:#C62828; color:white; border:none; border-radius:3px; cursor:pointer; padding: 4px; font-weight:bold; display: flex; justify-content: center; align-items: center;" onclick="window.rollAttackAction('dmg', '${atk.dmg}', '${atk.name}')">${atk.dmg}</button>
-            </div>
-        `;
+                <button class="qa-btn hit" style="flex:1; background:#4CAF50; color:white; border:none; border-radius:3px; cursor:pointer; padding: 4px; font-weight:bold;" onclick="window.rollAttackAction('hit', '${atk.hit}', '${atk.name}')">TxC ${atk.hit}</button>
+                <button class="qa-btn dmg" style="flex:1; background:#C62828; color:white; border:none; border-radius:3px; cursor:pointer; padding: 4px; font-weight:bold;" onclick="window.rollAttackAction('dmg', '${atk.dmg}', '${atk.name}')">${atk.dmg}</button>
+            </div>`;
         panel.appendChild(row);
     });
-
     tokenEl.appendChild(panel);
 }
 
-// Espone la funzione per essere chiamata dall'HTML onclick="..."
+export function toggleTokenMenu() {
+    const menu = document.getElementById('token-submenu');
+    if (menu) {
+        // Se è aperto lo chiude, se è chiuso lo apre
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    }
+}
+
+// Esposizione Globale
 window.removeFromInitiative = removeFromInitiative;
+window.addToInitiative = addToInitiative;
+window.toggleQuickAttacks = toggleQuickAttacks;
+window.submitTokenCreation = submitTokenCreation;
+window.openCreationModal = openCreationModal
+window.toggleTokenMenu = toggleTokenMenu;

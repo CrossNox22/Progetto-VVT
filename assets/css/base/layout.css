@@ -119,3 +119,54 @@ body.loading #dice-panel,
 body.loading #log-panel {
     display: none !important;
 }
+
+/* --- STILE SOTTOMENU TOKEN (D&D Style) --- */
+
+.submenu-dropdown {
+    display: none; /* Gestito da JS */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    /* Sfondo pannello chiaro */
+    background-color: #FFF7E6; 
+    /* Bordo esterno rosso più spesso */
+    border: 2px solid #922610; 
+    border-radius: 4px;
+    padding: 8px; /* Un po' di spazio interno */
+    min-width: 180px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    z-index: 1000;
+}
+
+.submenu-item {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 6px; /* Spazio tra i bottoni */
+    padding: 8px 12px;
+    
+    /* Colore bottone standard (Beige scuro) */
+    background-color: #EADCC1; 
+    
+    /* Bordino rosso sottile attorno a ogni tasto */
+    border: 1px solid #922610; 
+    border-radius: 4px;
+    
+    color: #2b2b2b; /* Testo scuro */
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Rimuovi margine all'ultimo bottone */
+.submenu-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Effetto Hover: Diventa più chiaro (non scuro!) */
+.submenu-item:hover {
+    background-color: #F4E4BC; /* Beige intermedio */
+    transform: translateY(-1px); /* Piccolo effetto 3D */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}

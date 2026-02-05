@@ -176,6 +176,7 @@
 .token-container:hover .resize-handle { opacity: 1; }
 
 .stat-box {
+    cursor: pointer;
     width: 24px; height: 24px;
     display: flex; align-items: center; justify-content: center;
     font-weight: bold; font-size: 12px;
