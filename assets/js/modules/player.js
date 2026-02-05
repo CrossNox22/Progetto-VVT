@@ -22,6 +22,19 @@ export function openPlayerWindow() {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             pointer-events: none; z-index: 2; 
         }
+
+#p-game-area {
+    width: 100%; 
+    height: 100%; 
+    position: relative; 
+    overflow: hidden;
+    cursor: grab; /* Cursore a manina */
+}
+
+#p-game-area:active {
+    cursor: grabbing; /* Cursore quando trascini */
+}
+
 #p-init-panel {
     position: absolute;
     top: 20px;
@@ -129,8 +142,62 @@ export function openPlayerWindow() {
     state.playerWin.document.close();
 }
 
+let pIsDragging = false;
+let pStartX, pStartY;
+let pCurrentX = 0;
+let pCurrentY = 0;
+let pScale = 1; // Gestiamo uno zoom locale per il giocatore
+
+function setupPlayerControls() {
+    const pWin = state.playerWin;
+    if (!pWin) return;
+
+    const gameArea = pWin.document.getElementById('p-game-area');
+    const world = pWin.document.getElementById('p-world-layer');
+
+    // --- LOGICA TRASCINAMENTO (PANNING) ---
+    gameArea.addEventListener('mousedown', (e) => {
+        if (e.button === 0 || e.button === 1) {
+            pIsDragging = true;
+            pStartX = e.clientX - pCurrentX;
+            pStartY = e.clientY - pCurrentY;
+            e.preventDefault();
+        }
+    });
+
+    pWin.addEventListener('mousemove', (e) => {
+        if (!pIsDragging) return;
+        pCurrentX = e.clientX - pStartX;
+        pCurrentY = e.clientY - pStartY;
+        updatePlayerTransform();
+    });
+
+    pWin.addEventListener('mouseup', () => { pIsDragging = false; });
+
+    // --- LOGICA ZOOM (ROTELINA) ---
+    pWin.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.05 : 0.05; // Sensibilità zoom
+        const oldScale = pScale;
+        pScale = Math.min(Math.max(0.1, pScale + delta), 5); // Limiti: 0.1x a 5x
+
+        // Opzionale: Piccola compensazione per zoomare verso il cursore
+        if (oldScale !== pScale) {
+            updatePlayerTransform();
+        }
+    }, { passive: false });
+
+    // Funzione interna per applicare i cambiamenti
+    function updatePlayerTransform() {
+        world.style.transform = `translate(${pCurrentX}px, ${pCurrentY}px) scale(${pScale})`;
+    }
+}
+
 window.onPlayerViewReady = function() {
-    setTimeout(() => { syncAllContent(); }, 150);
+    setTimeout(() => {
+        setupPlayerControls(); // Attiva panning e zoom
+        syncAllContent();
+    }, 150);
 };
 
 export function syncAllContent() {
