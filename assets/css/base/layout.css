@@ -22,14 +22,6 @@
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
 }
 
-/* Separatore */
-.separator {
-    width: 1px;
-    height: 30px;
-    background: #555;
-    margin: 0 5px;
-    /* più compatto per mobile */
-}
 
 /* Gruppi nella toolbar */
 .toolbar-group {
@@ -181,8 +173,7 @@ body.loading #log-panel {
 
 /* MEDIA QUERY per schermi piccoli */
 @media (max-width: 768px) {
-    #toolbar {
-        flex-direction: column;
+    #toolbar {       
         height: auto;
         padding: 10px;
     }
@@ -267,4 +258,73 @@ body.loading #log-panel {
     }
 }
 
+/* Contenitore principale della lente */
+.search-container {
+    position: relative;
+    display: inline-block;
+}
 
+/* Stile del bottone Lente (Coerente con lo stile D&D) */
+.main-button {
+    font-size: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #EADCC1;
+    /* Beige come i submenu */
+    border: 1.5px solid #922610;
+    border-radius: 10px;
+    color: #922610;
+    transition: all 0.2s;
+}
+
+.main-button:hover {
+    background-color: #F4E4BC;
+}
+
+/* Stile del menu a tendina dello zoom */
+.dropdown-content {
+    display: none;
+    /* Fondamentale: parte nascosto */
+    position: absolute;
+    top: 100%;
+    /* Si attacca sotto il bottone */
+    right: 0;
+    /* Lo allinea a destra per non uscire dallo schermo */
+    background-color: #FFF7E6;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.4);
+    z-index: 3000;
+    /* Superiore a quasi tutto */
+    border: 2px solid #922610;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Bottoni dentro il menu zoom */
+.dropdown-content button {
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    color: #2b2b2b;
+    border-radius: 3px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-content button:last-child {
+    border-bottom: none;
+}
+
+.dropdown-content button:hover {
+    background-color: #922610d4;
+    color: rgb(9, 3, 3);
+}
+
+/* La classe magica che JS aggiunge/toglie */
+.show {
+    display: block !important;
+}

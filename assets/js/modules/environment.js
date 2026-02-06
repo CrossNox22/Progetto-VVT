@@ -297,3 +297,30 @@ document.addEventListener('click', (e) => {
         burgerDropdown.style.display = 'none';
     }
 });
+
+
+// --- GESTIONE MENU ZOOM (LENTE) ---
+
+export function toggleMenu() {
+    const menu = document.getElementById("zoomMenu");
+    if (menu) {
+        menu.classList.toggle("show");
+    }
+}
+
+// Esponiamo la funzione globalmente per l'onclick nell'HTML
+window.toggleMenu = toggleMenu;
+
+// Chiude il menu se clicchi fuori
+window.addEventListener('click', (event) => {
+    // Gestione menu Lente
+    if (!event.target.matches('.main-button')) {
+        const dropdowns = document.getElementsByClassName("dropdown-content");
+        for (let i = 0; i < dropdowns.length; i++) {
+            let openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+});
