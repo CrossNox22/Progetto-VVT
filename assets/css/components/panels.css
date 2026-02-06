@@ -139,38 +139,54 @@
 
 /* --- FIX CALENDARIO (assets/css/components/panels.css) --- */
 
+/* --- FIX CALENDARIO (assets/css/components/panels.css) --- */
+
+.calendar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
 .cal-input {
-    /* 1. Colori: Testo Nero su Sfondo Trasparente (prende il beige del pannello) */
     background-color: transparent !important; 
-    color: #000 !important;               /* Testo Nero */
+    color: #333 !important;      /* Colore scuro più leggibile su pergamena */
     border: none !important;
-    border-bottom: 1px dashed #922610 !important; /* Sottolineatura rossa tratteggiata */
+    border-bottom: 1px dotted #922610 !important;
     
-    /* 2. Font e Stile */
-    font-family: var(--font-main);        /* Usa il font Georgia */
-    font-size: 18px !important;
-    font-weight: normal;
+    font-family: var(--font-main);
+    font-size: 15px !important;  /* RIDOTTO PER EVITARE TAGLI */
+    font-weight: bold;
     text-align: center;
-    padding: 2px;
-    width: 80px;                          /* Larghezza fissa per ordine */
+    padding: 0 2px;
+    height: 24px;
+}
+
+/* Regole specifiche per Mese e Anno */
+#month-name {
+    width: 100px !important;     /* Più largo per nomi lunghi (es. Settembre) */
+    text-align: right;
+}
+
+#year-num {
+    width: 50px !important;      /* Più stretto per l'anno */
+    text-align: left;
 }
 
 .cal-input:focus {
     outline: none;
-    border-bottom: 1px solid #922610 !important; /* Linea solida quando ci clicchi */
-    background-color: rgba(255, 255, 255, 0.2) !important; /* Leggero evidenziatore */
+    border-bottom: 1px solid #922610 !important;
+    background-color: rgba(146, 38, 16, 0.05) !important;
 }
 
-/* 3. RIMUOVERE LE FRECCETTE (SPINNER) */
-
-/* Per Chrome, Safari, Edge, Opera */
+/* Rimuovere le freccette (Spinner) */
 .cal-input::-webkit-outer-spin-button,
 .cal-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-
-/* Per Firefox */
 .cal-input[type=number] {
     -moz-appearance: textfield;
 }
