@@ -81,6 +81,12 @@ export function openCreationModal(type) {
 
     // 1. Mostra la finestra di creazione
     document.getElementById('creation-modal').style.display = 'block';
+if (type === 'hero') {
+        // Importiamo dinamicamente per evitare dipendenze circolari strane
+        import('./token-gen.js').then(module => {
+            if (module.initClassForm) module.initClassForm();
+        });
+    }
 
     // 2. NUOVO: Nasconde la schermata iniziale se è aperta
     const startScreen = document.getElementById('start-screen');
@@ -102,26 +108,36 @@ export function openCreationModal(type) {
 }
 
 export function submitTokenCreation() {
-    // Recuperiamo il tipo (enemy/hero) salvato nello state
+    // 1. Recuperiamo il tipo (hero/enemy)
     const type = state.selection.creationType || 'hero';
     
-    // Recuperiamo l'immagine se l'utente ne ha caricata una "al volo" (opzionale)
-    // Se usi state.selection.pendingImg per gestire le immagini temporanee
-    const img = state.selection.pendingImg || null;
+    // 2. Recuperiamo l'immagine dall'anteprima (se è stata cambiata)
+    const imgEl = document.getElementById('token-preview-img');
+    let img = null;
+    
+    // Se l'immagine NON contiene "default_", vuol dire che è stata caricata dall'utente
+    if (imgEl && !imgEl.src.includes('default_')) {
+        img = imgEl.src;
+    }
 
-    // Generiamo i dati
+    // 3. Generiamo i dati e creiamo il token
     const tokenData = createTokenFromForm(type, img);
-
-    // Creiamo il token
     spawnToken(tokenData);
 
-    // Pulizia (opzionale): Resetta i campi del form
+    // 4. Pulizia: Resetta i campi del form per la prossima volta
     if(document.getElementById('input-name')) document.getElementById('input-name').value = "";
-    if(document.getElementById('input-hp')) document.getElementById('input-hp').value = "";
-    if(document.getElementById('input-ac')) document.getElementById('input-ac').value = "";
+    if(document.getElementById('input-hp')) document.getElementById('input-hp').value = "10";
+    if(document.getElementById('input-ac')) document.getElementById('input-ac').value = "10";
     
-    // Qui dovresti chiudere la modale se hai una funzione close()
-    // es. toggleCreationModal(false);
+    // Resetta anche l'immagine di anteprima a quella di default
+    if (imgEl) {
+        imgEl.src = type === 'enemy' 
+            ? "assets/img/tokens/default_enemy.png" 
+            : "assets/img/tokens/default_hero.png";
+    }
+    
+    // 5. CHIUSURA MODALE (La parte che mancava!)
+    document.getElementById('creation-modal').style.display = 'none';
 }
 
 export function spawnToken(d) {
@@ -473,6 +489,17 @@ export function toggleTokenMenu() {
     }
 }
 
+// Funzione per l'anteprima immediata dell'immagine caricata
+export function previewTokenImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('token-preview-img').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 // Esposizione Globale
 window.removeFromInitiative = removeFromInitiative;
 window.addToInitiative = addToInitiative;
@@ -480,3 +507,24 @@ window.toggleQuickAttacks = toggleQuickAttacks;
 window.submitTokenCreation = submitTokenCreation;
 window.openCreationModal = openCreationModal
 window.toggleTokenMenu = toggleTokenMenu;
+
+window.switchCreationType = function(type) {
+    state.selection.creationType = type;
+    const heroFields = document.getElementById('hero-extra-fields');
+    const title = document.getElementById('creation-title');
+    const tabs = document.querySelectorAll('.tab-btn');
+
+    tabs.forEach(t => t.classList.remove('active'));
+    
+    if (type === 'hero') {
+        heroFields.style.display = 'block';
+        title.textContent = "Nuovo Eroe";
+        tabs[0].classList.add('active');
+    } else {
+        heroFields.style.display = 'none';
+        title.textContent = "Nuovo Mostro";
+        tabs[1].classList.add('active');
+    }
+};
+
+window.previewTokenImage = previewTokenImage;

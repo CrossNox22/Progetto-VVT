@@ -1,227 +1,184 @@
-/* modal.css - Finestre e Statblock */
+/* ==========================================================================
+   MODAL.CSS - Gestione Finestre, Statblock e Stile D&D
+   ========================================================================== */
 
+/* --- 1. STRUTTURA BASE MODALE --- */
 .modal {
-    display: none; position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.8);
-    z-index: 3000; align-items: center; justify-content: center;
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
 }
 
-/* STATBLOCK CARD (Stile Pergamena) */
-/* STATBLOCK CARD (Stile Pergamena) */
+/* --- 2. CONTENITORE SCHEDA (PERGAMENA) --- */
 .statblock-card {
-    background-color: var(--bg-panel);
-    color: var(--text-main);              /* Testo normale nero */
-    font-family: var(--font-main);
+    background-color: #FFF7E6; 
+    color: #000;
+    font-family: 'Cinzel', serif;
     padding: 20px;
     border: 1px solid #d4c4a9;
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    width: 450px; max-height: 85vh; overflow-y: auto;
+    width: 450px;
+    max-height: 85vh;
+    overflow-y: auto;       
+    overflow-x: hidden !important; 
     position: relative;
+    box-sizing: border-box;
+    padding-right: 10px; 
 }
 
-/* --- FIX COLORI ROSSI (Manuale dei Mostri) --- */
+.statblock-card * { box-sizing: border-box; }
 
-/* 1. Etichette in grassetto (CA, HP, Velocità, Sensi, Lingue, Sfida) */
-.statblock-card strong, 
-.statblock-card b {
-    color: var(--accent-red) !important; /* <--- Questo è il trucco! */
-}
-
-/* 2. Titoli delle sezioni (Azioni, Incantesimi, Note) */
-.statblock-card h3, 
-.statblock-card h4, 
-.sb-section-title {
-    color: var(--accent-red) !important; /* Anche i titoli diventano rossi */
-    border-bottom-color: #d4c4a9;
+/* --- 3. COLORI E TITOLI --- */
+.sb-title, .action-header, .statblock-card h3, .statblock-card h4 {
+    color: #922610 !important;
+    font-weight: bold;
     font-variant: small-caps;
+    margin: 0;
 }
+.sb-title { font-size: 24px; line-height: 1.2; }
+.sb-subtitle { font-size: 12px; font-style: italic; color: #333; margin-bottom: 5px;}
 
-/* 3. La linea divisoria sfumata */
-.tapered-rule {
-    display: block; height: 2px;
-    background: linear-gradient(to right, var(--accent-red) 0%, var(--accent-red) 80%, transparent 100%);
-    margin: 10px 0;
+.statblock-card strong, .statblock-card b, .sb-row {
+    color: #922610 !important;
+    font-weight: bold;
 }
-
-.sb-header { border-bottom: 2px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 10px; }
-.sb-title { font-size: 24px; font-weight: bold; font-variant: small-caps; color: var(--accent-red); margin: 0; }
-.sb-subtitle { font-size: 12px; font-style: italic; color: #333; }
-
-.tapered-rule {
-    display: block; height: 2px;
-    background: linear-gradient(to right, var(--accent-red) 0%, var(--accent-red) 80%, transparent 100%);
-    margin: 10px 0;
-}
-
-.sb-section-title {
-    font-variant: small-caps; font-weight: bold;
-    color: var(--accent-red);
-    border-bottom: 1px solid #d4c4a9; margin-top: 10px;
-}
-
-.ability-grid { display: grid; grid-template-columns: repeat(6, 1fr); text-align: center; color: var(--accent-red); margin: 10px 0; }
-.ability-score { font-size: 16px; font-weight: bold; display: block; }
-
-.sb-input {
-    background: transparent; border: none;
-    border-bottom: 1px dashed var(--accent-red);
-    color: var(--text-main); font-family: inherit; width: 100%;
-}
-.sb-input:focus { outline: none; border-bottom: 1px solid var(--accent-red); }
-
-/* INVENTARIO DENTRO IL MODAL */
-.statblock-card .inv-row {
-    border-bottom: 1px solid var(--accent-red); padding: 5px 0;
-    display: flex; align-items: center;
-}
-.statblock-card .inv-name {
-    color: #000; font-weight: bold; font-family: var(--font-ui);
-    background: transparent; border: none; font-size: 14px;
-}
-.statblock-card .inv-qty {
-    color: var(--accent-red); font-weight: bold;
-    background: transparent; border: none; text-align: center;
-}
-
-/* GRIMORIO DENTRO IL MODAL */
-.statblock-card .spell-row {
-    border-bottom: 1px solid var(--accent-red); padding: 8px 0;
-    display: flex; align-items: center; justify-content: space-between;
-}
-.statblock-card .spell-circle {
-    width: 14px; height: 14px; border-radius: 50%;
-    border: 1px solid #555; background-color: rgba(255,255,255,0.5);
-    cursor: pointer; margin-right: 3px;
-}
-.statblock-card .spell-circle.used {
-    background-color: var(--accent-red); border-color: #7a200d;
-}
-
-.modal-footer { margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px; }
-
-/* --- FIX CLASSI MANCANTI (Per compatibilità col vecchio JS) --- */
-
-/* La riga intera diventa rossa e grassetto (es. "Classe Armatura") */
-.sb-row { 
-    font-size: 14px; 
-    margin-bottom: 3px; 
-    color: var(--accent-red) !important; /* Forza il rosso */
-    font-weight: bold; 
-}
-
-/* Il valore numerico torna nero e normale (es. "10") */
-.sb-val { 
-    color: var(--text-main) !important; /* Torna nero */
-    font-weight: normal; 
-}
-
-/* Fix specifico per l'input dentro le righe (se presente) */
-.sb-input {
-    color: var(--text-main);
-    font-weight: normal;
-}
-
-/* --- FIX TITOLI AZIONI E INCANTESIMI (Mancava questa classe!) --- */
+.sb-val { color: #000 !important; font-weight: normal; }
 
 .action-header {
-    color: var(--accent-red) !important; /* Il Rosso D&D (#922610) */
     font-size: 18px;
-    font-variant: small-caps;            /* Maiuscoletto elegante */
-    font-weight: bold;
-    border-bottom: 1px solid #d4c4a9;    /* Linea sabbia sotto */
-    margin: 15px 0 5px 0;
-    display: block;                      /* Assicura che vada a capo */
+    margin-top: 15px;
+    margin-bottom: 5px;
+    width: 100%;
+    border-bottom: 1px solid #922610 !important; 
 }
 
-/* Per sicurezza copriamo anche H3 e H4 se usati per le Note */
-.statblock-card h3, 
-.statblock-card h4 {
-    color: var(--accent-red) !important;
-    border-bottom: 1px solid #d4c4a9;
-    font-variant: small-caps;
-}
-
-/* 1. Impedisce alla riga di andare a capo */
-.statblock-card div[style*="flex"] {
-    flex-wrap: nowrap !important;
-}
-
-/* 2. Il Nome dell'attacco si prende tutto lo spazio rimasto */
-.statblock-card div[style*="flex"] input[type="text"]:nth-of-type(1) {
-    flex: 1 !important;
-    min-width: 50px;
-}
-
-/* 3. La casella del Bonus (+2) piccola e fissa */
-.statblock-card div[style*="flex"] input[type="text"]:nth-of-type(2) {
-    width: 35px !important;
-    flex: 0 0 auto !important; /* Non si ingrandisce mai */
-    text-align: center;
-}
-
-/* 4. LA CASELLA DANNI (Il fix che hai chiesto) */
-.statblock-card div[style*="flex"] input[type="text"]:nth-of-type(3) {
-    width: 60px !important;    /* Larghezza fissa e ridotta */
-    flex: 0 0 auto !important; /* Blocca l'espansione (stop al glide) */
-    text-align: right;         /* Testo allineato a destra vicino al bottone */
-}
-
-/* 1. Applica il rosso a TUTTO ciò che sta nell'header (h4, div, span, label, ecc.) */
-.statblock-card h4, 
-.action-header,
-.statblock-card h4 *, 
-.action-header * { 
-    color: var(--accent-red) !important;
-}
-
-/* 2. Eccezione: Il numero dentro l'input deve rimanere Nero (o cambia in rosso se preferisci) */
-.statblock-card h4 input,
-.action-header input {
-    color: #000 !important; 
-    border-color: var(--accent-red) !important; /* Già che ci siamo, bordo rosso */
-}
-
-/* ==========================================================================
-FIX FORZATO BOTTONE CHIUDI (INVENTARIO)
-========================================================================== */
-
-/* 1. Reset e Colore Rosso D&D */
-#inventory-modal .modal-footer button,      /* Inventario */
-#spell-modal .modal-footer button,          /* Grimorio */
-#sheet-modal .modal-footer button {         /* Scheda */
-    background: #922610 !important;         /* 'background' sovrascrive anche i gradienti */
-    background-color: #922610 !important;   /* Sicurezza */
-    color: white !important;
-    border: 1px solid #5a1005 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
-    text-shadow: none !important;
+/* --- 4. LINEE E DIVISORI (SOLIDI) --- */
+.tapered-rule {
+    display: block !important;
+    height: 2px;
+    border: none;
+    background: #922610; 
+    margin: 10px 0;
     opacity: 1 !important;
 }
 
-/* 2. Effetto Hover (Più scuro quando passi sopra) */
-#inventory-modal .modal-footer button:hover,
-#spell-modal .modal-footer button:hover,
-#sheet-modal .modal-footer button:hover {
-    background: #721c0b !important;
+.sb-header {
+    border-bottom: 2px solid #922610 !important;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/* FIX LINEA BASSO: Ora usa lo stesso spessore e colore */
+.skills-grid {
+    border-top: 2px solid #922610 !important;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+/* --- 5. INPUT E CAMPI DATI --- */
+.sb-input {
+    background: transparent; border: none;
+    border-bottom: 1px dashed #922610; 
+    color: #000; font-family: inherit; width: 100%;
+}
+.sb-input:focus { outline: none; border-bottom: 1px solid #922610; }
+
+/* --- 6. GRIGLIA CARATTERISTICHE --- */
+.ability-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    text-align: center; color: #922610; margin: 10px 0;
+}
+.ability-score { font-size: 16px; font-weight: bold; display: block; color: #000; }
+.ability-mod { font-size: 12px; color: #000; }
+
+/* --- 7. SEZIONE ATTACCHI --- */
+.sheet-attack-row {
+    width: 100%; display: flex; align-items: center; gap: 5px; padding: 6px 0;
+    border-bottom: 1px solid #d4c4a9 !important; 
+}
+.atk-name-input {
+    flex: 1; min-width: 0; width: auto !important; border: none; background: transparent;
+    font-variant: small-caps; font-weight: bold; font-size: 15px; color: #2b2b2b; text-transform: uppercase;
+}
+.atk-group {
+    display: flex; align-items: center; gap: 2px; flex-shrink: 0; white-space: nowrap;
+    background: rgba(0,0,0,0.03); border-radius: 4px; padding: 0 2px;
+}
+.atk-val-input {
+    width: 35px; text-align: center; border: none; background: transparent;
+    font-weight: bold; font-size: 14px; padding: 0;
+}
+.atk-val-input.hit { color: #2E7D32; }
+.atk-val-input.dmg { color: #C62828; }
+.dnd-icon-btn {
+    width: 24px; height: 24px; border: none; border-radius: 3px;
+    color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;
+}
+.hit-btn { background-color: #5D4037; }
+.dmg-btn { background-color: #922610; }
+.del-btn { background: transparent; color: #922610; font-size: 16px; width: 20px; }
+
+/* --- 8. INVENTARIO E GRIMORIO --- */
+.statblock-card .inv-row, .statblock-card .spell-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 0; border-bottom: 1px dotted #d4c4a9; 
+}
+.inv-name, .spell-name { flex: 1; font-weight: bold; border: none; background: transparent; }
+.inv-qty { width: 40px; text-align: center; border: none; background: transparent; color: #922610; font-weight: bold; }
+.spell-slots-area { display: flex; gap: 3px; }
+.spell-circle {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid #922610; cursor: pointer;
+}
+.spell-circle.used { background-color: #922610; }
+
+/* --- 9. FOOTER --- */
+.modal-footer {
+    margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;
+    border-top: 2px solid #922610; padding-top: 10px;
+}
+.modal-footer button, .modal-footer button.primary,
+#inventory-modal .modal-footer button, #spell-modal .modal-footer button, #sheet-modal .modal-footer button {
+    background: #922610 !important; color: white !important; border: 1px solid #5a1005 !important;
+    padding: 8px 20px; font-weight: bold; cursor: pointer; border-radius: 3px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); opacity: 1;
+}
+.modal-footer button:hover { background: #721c0b !important; transform: translateY(-1px); }
+
+/* STILE MENU A TENDINA (D&D Style) */
+.dnd-select {
+    appearance: none; /* Rimuove lo stile nativo brutto */
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #922610;
+    font-family: inherit;
+    font-size: 14px;
+    color: #333;
+    padding-right: 20px; /* Spazio per la freccina */
     cursor: pointer;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23922610" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 16px;
 }
 
-.modal-footer button,
-.modal-footer button.primary {
-    background-color: #922610 !important;
-    /* Rosso D&D */
-    background-image: none !important;
-    /* Via gradienti arancioni */
-    color: white !important;
-    border: 1px solid #5a1005 !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
-    opacity: 1 !important;
+.dnd-select:focus {
+    outline: none;
+    background-color: rgba(146, 38, 16, 0.05);
 }
 
-.modal-footer button:hover,
-.modal-footer button.primary:hover {
-    background-color: #721c0b !important;
-    /* Rosso scuro */
-    transform: translateY(-1px);
+.class-row {
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #d4c4a9;
 }
+

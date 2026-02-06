@@ -247,3 +247,268 @@
     opacity: 1;
     pointer-events: auto;
 }
+
+/* --- TEMA MODALE CREAZIONE (Compact & Centered) --- */
+
+/* 1. Il Contenitore Scuro Esterno (Centratura Perfetta) */
+#creation-modal {
+    display: none; /* Gestito da JS */
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7); /* Sfondo scuro dietro */
+    
+    /* QUESTE 3 RIGHE CENTRANO IL BOX PERFETTAMENTE */
+    display: none; /* Nota: JS lo sovrascrive a 'flex' quando lo apre */
+    justify-content: center;
+    align-items: center;
+}
+
+/* IMPORTANTE: Quando JS imposta display='block', noi vogliamo 'flex' per centrare.
+   Aggiungi questa regola per forzare il flex quando è visibile */
+#creation-modal[style*="display: block"] {
+    display: flex !important;
+}
+
+/* 2. La Scheda Pergamena (Compatta) */
+#creation-modal .dnd-theme {
+    background-color: #FFF7E6 !important;
+    border: 2px solid #922610;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    color: #58180D;
+    font-family: 'Cinzel', serif;
+    
+    /* RENDIAMOLA COMPATTA COME LA SCHEDA PERSONAGGIO */
+    width: 420px; /* Larghezza fissa e stretta */
+    max-width: 90%; /* Per schermi piccoli */
+    padding: 20px 25px; /* Spaziatura interna */
+    border-radius: 4px;
+    position: relative;
+    /* Rimuovi margini automatici vecchi se presenti */
+    margin: 0; 
+}
+
+/* 3. Titoli e Header */
+.dnd-title {
+    color: #922610 !important;
+    border-bottom: 2px solid #922610;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-size: 22px; /* Un po' più piccolo ed elegante */
+    text-align: center;
+}
+
+.dnd-subtitle {
+    color: #58180D;
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 1px dotted #922610;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+/* Colore del placeholder (testo di suggerimento) */
+.dnd-input::placeholder {
+    color: #922610;
+    opacity: 0.4; /* Rosso molto sbiadito */
+    font-style: italic;
+}
+
+/* 4. Input e Label (Stile "Riga") */
+.dnd-input {
+    background: transparent !important;
+    border: none;
+    border-bottom: 1px solid #922610; /* Riga sottile */
+    color: #2b2b2b !important;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 2px 5px;
+    width: 100%;
+    outline: none;
+    text-align: left;
+}
+
+.dnd-input:focus {
+    border-bottom: 2px solid #d32f2f;
+    background: rgba(146, 38, 16, 0.05) !important;
+}
+
+#creation-modal label {
+    color: #922610 !important;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    display: block;
+}
+
+/* 5. Selettore Tipo (Tab) */
+.type-selector {
+    display: flex;
+    justify-content: center;
+    gap: 0; /* Uniti come un unico blocco */
+    margin-bottom: 15px;
+    border: 1px solid #922610;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.tab-btn {
+    flex: 1;
+    background: #EADCC1;
+    border: none; /* Bordo gestito dal contenitore */
+    color: #58180D;
+    padding: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    transition: background 0.2s;
+}
+
+.tab-btn:not(:last-child) {
+    border-right: 1px solid #922610;
+}
+
+.tab-btn.active {
+    background: #922610;
+    color: #FFF7E6;
+}
+
+/* 6. Griglie e Layout Interno */
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.form-col {
+    flex: 1;
+}
+
+/* Griglia Statistiche Compatta */
+.stats-grid-creation {
+    display: flex; /* Flex è meglio di Grid qui per centrare */
+    justify-content: space-between;
+    background: rgba(146, 38, 16, 0.05);
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #E0C9A6;
+}
+
+.stats-grid-creation div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dnd-input.mini {
+    width: 40px !important; /* Leggermente più largo per sicurezza */
+    height: 30px; /* Altezza fissa */
+    text-align: center;
+    font-size: 16px; /* Font leggibile */
+    font-weight: bold;
+    border: 1px solid #922610;
+    background: rgba(255,255,255,0.5) !important;
+    border-radius: 4px;
+    padding: 0; /* Rimuove spaziatura interna che sposta il testo */
+    margin-top: 2px;
+}
+
+/* Rimuove le freccette su/giù dai campi numero (Chrome, Safari, Edge, Opera) */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Rimuove le freccette su/giù dai campi numero (Firefox) */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Fix per input generici che sembrano tagliati */
+.dnd-input {
+    line-height: normal; /* Assicura che il testo non sia tagliato verticalmente */
+    padding: 5px; /* Un po' di aria attorno al testo */
+}
+
+/* Footer Bottoni */
+.modal-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end; /* Allinea a destra */
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 2px solid #922610;
+}
+
+.dnd-btn-primary, .dnd-btn-danger {
+    padding: 6px 15px;
+    border: 1px solid #58180D;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.dnd-btn-primary {
+    background: #922610;
+    color: white;
+}
+
+.dnd-btn-danger {
+    background: transparent;
+    color: #922610;
+    border: 1px solid #922610;
+}
+
+/* --- UPLOAD IMMAGINE TOKEN --- */
+
+.token-image-upload {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px auto; /* Centrato orizzontalmente */
+    border: 2px solid #922610;
+    background-color: #EADCC1;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden; /* Taglia l'immagine se sborda */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+}
+
+.token-image-upload img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Riempie il quadrato senza deformare */
+    display: block;
+}
+
+/* Effetto Hover (Scritta "Cambia Foto") */
+.upload-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(146, 38, 16, 0.85); /* Rosso semitrasparente */
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    padding: 3px 0;
+    text-transform: uppercase;
+    font-weight: bold;
+    transform: translateY(100%); /* Nascosto sotto */
+    transition: transform 0.2s ease;
+}
+
+.token-image-upload:hover .upload-overlay {
+    transform: translateY(0); /* Appare salendo */
+}
