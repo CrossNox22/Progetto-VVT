@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
-    <title>Vista Giocatore</title>
+    <title>Vista Player</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/base/player.css">
+    <link rel="shortcut icon" href="/assets/media/img/cross-logo.ico" type="image/x-icon">
 </head>
+
 <body>
     
     <div id="login-overlay">
@@ -31,179 +34,7 @@
         </div>
     </div>
     
-    <script>
-        let peer, conn;
-        let scale = 1, panX = 0, panY = 0;
-        
-        function connectToGame() {
-            const hostId = document.getElementById('host-id-input').value.trim();
-            if(!hostId) return;
-            document.getElementById('status-msg').textContent = "Connessione in corso...";
-            
-            peer = new Peer(); 
-            peer.on('open', (id) => {
-                conn = peer.connect(hostId);
-                conn.on('open', () => {
-                    document.getElementById('login-overlay').style.display = 'none';
-                    console.log("Connesso!");
-                });
-                conn.on('data', handleData);
-                conn.on('error', (err) => alert("Errore: " + err));
-            });
-        }
-        
-        function handleData(d) {
-            if(d.type === 'SYNC_MAP') document.getElementById('map-img').src = d.payload.src;
-            else if(d.type === 'SPAWN_TOKEN') spawnToken(d.payload);
-            else if(d.type === 'REMOVE_TOKEN') { const e = document.getElementById(d.payload.id); if(e) e.remove(); }
-            else if(d.type === 'SPAWN_PROP') spawnProp(d.payload);
-            
-            // AGGIORNAMENTO POSIZIONE OTTIMIZZATO (Senza ricreare il DOM)
-            else if(d.type === 'UPDATE_POS') {
-                const el = document.getElementById(d.payload.id);
-                if(el) { 
-                    el.style.left = d.payload.x + 'px'; 
-                    el.style.top = d.payload.y + 'px'; 
-                }
-            }
-            
-            else if(d.type === 'SYNC_INIT') {
-                const p = document.getElementById('init-panel');
-                if(d.payload.length > 0) {
-                    p.style.display = 'block';
-                    p.innerHTML = "<h3 style='margin:0 0 5px 0; color:#FF9800; text-align:center;'>Iniziativa</h3>" + 
-                    d.payload.map(i => `<div class="init-row"><span style="color:#FF9800; font-weight:bold;">${i.val}</span> <span>${i.name}</span></div>`).join('');
-                } else { p.style.display = 'none'; }
-            }
-            else if(d.type === 'SYNC_INVENTORY') {
-                const p = document.getElementById('inventory-panel');
-                if(d.payload.open) {
-                    p.style.display = 'block';
-                    document.getElementById('inv-title').textContent = "Zaino: " + d.payload.title;
-                    document.getElementById('inv-list').innerHTML = d.payload.items.map(i => 
-                    `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding:5px; font-size:14px;">
-                            <span>${i.n||i.name}</span> <span style="color:#FF9800; font-weight:bold;">x${i.q||i.qty}</span>
-                        </div>`
-                        ).join('');
-                    } else { p.style.display = 'none'; }
-                }
-            }
-            
-            let dragItem = null;
-            let dragOffsetX, dragOffsetY;
-            
-            function spawnToken(d) {
-                const old = document.getElementById(d.id);
-                if(old) old.remove();
-                if(d.hidden) return;
-                
-                const el = document.createElement('div');
-                el.id = d.id;
-                el.className = 'token ' + (d.isEnemy ? 'enemy' : 'hero');
-                el.style.left = d.x + 'px';
-                el.style.top = d.y + 'px';
-                el.style.zIndex = d.z;
-                if(d.scale) el.style.transform = `scale(${d.scale})`;
-                
-                // COSTRUZIONE HTML INTERNO
-                let inner = `<div class="token-name">${d.name}</div>`;
-                inner += `<img src="${d.image}" class="token-img">`;
-                
-                let statsHtml = '';
-                if(!d.isEnemy || d.statsVisible) { 
-                    statsHtml += `<div class="ac-box stat-box">${d.ac}</div>`;
-                    if(!d.isEnemy && d.spellSlots) {
-                        let avail = 0; d.spellSlots.forEach(s => avail += (s.max - s.used));
-                        if(avail > 0) statsHtml += `<div class="spell-box stat-box">${avail}</div>`;
-                    }
-                }
-                if(statsHtml) inner += `<div class="stats-row">${statsHtml}</div>`;
-                
-                let statusHtml = '';
-                if(d.statuses && d.statuses.length > 0) {
-                    d.statuses.forEach(s => statusHtml += `<div class="status-icon">${s.charAt(0)}</div>`);
-                    inner += `<div class="status-overlay">${statusHtml}</div>`;
-                }
-                
-                let pct = Math.max(0, Math.min(100, (d.hpCurrent / d.hpMax) * 100));
-                let color = pct > 50 ? "#4CAF50" : (pct > 25 ? "#FFC107" : "#F44336");
-                inner += `<div class="hp-bar-container"><div class="hp-bar-fill" style="width:${pct}%; background:${color};"></div><div class="hp-text">${d.hpCurrent}/${d.hpMax}</div></div>`;
-                
-                el.innerHTML = inner;
-                document.getElementById('world-layer').appendChild(el);
-                
-                el.addEventListener('mousedown', (e) => {
-                    if(d.isEnemy) return; 
-                    e.stopPropagation();
-                    dragItem = el;
-                    const rect = el.getBoundingClientRect();
-                    dragOffsetX = (e.clientX - rect.left) / scale;
-                    dragOffsetY = (e.clientY - rect.top) / scale;
-                });
-            }
-            
-            function spawnProp(d) {
-                const el = document.createElement('div');
-                el.id = d.id;
-                el.className = 'prop';
-                el.style.left = d.x + 'px'; el.style.top = d.y + 'px';
-                el.style.zIndex = d.z;
-                el.innerHTML = `<img src="${d.image}" style="transform:scale(${d.scale || 1})">`;
-                document.getElementById('world-layer').appendChild(el);
-                el.addEventListener('mousedown', (e) => {
-                    e.stopPropagation();
-                    dragItem = el;
-                    const rect = el.getBoundingClientRect();
-                    dragOffsetX = (e.clientX - rect.left) / scale;
-                    dragOffsetY = (e.clientY - rect.top) / scale;
-                });
-            }
-            
-            window.addEventListener('mousemove', (e) => {
-                if(dragItem) {
-                    const worldRect = document.getElementById('world-layer').getBoundingClientRect();
-                    const x = (e.clientX - worldRect.left) / scale - dragOffsetX;
-                    const y = (e.clientY - worldRect.top) / scale - dragOffsetY;
-                    dragItem.style.left = x + 'px'; dragItem.style.top = y + 'px';
-                }
-            });
-            
-            window.addEventListener('mouseup', () => {
-                if(dragItem && conn) {
-                    conn.send({ type: 'MOVE_REQUEST', payload: { id: dragItem.id, x: parseFloat(dragItem.style.left), y: parseFloat(dragItem.style.top) } });
-                    dragItem = null;
-                }
-            });
-            
-            const gameArea = document.getElementById('game-area');
-            const world = document.getElementById('world-layer');
-            let isPanning = false, startPanX, startPanY;
-            
-            gameArea.addEventListener('mousedown', e => {
-                if(e.target === gameArea || e.target === world || e.target.id === 'map-img') {
-                    isPanning = true;
-                    startPanX = e.clientX - panX;
-                    startPanY = e.clientY - panY;
-                }
-            });
-            
-            window.addEventListener('mousemove', e => {
-                if(isPanning) {
-                    panX = e.clientX - startPanX;
-                    panY = e.clientY - startPanY;
-                    updateTransform();
-                }
-            });
-            
-            window.addEventListener('mouseup', () => isPanning = false);
-            window.addEventListener('wheel', e => {
-                e.preventDefault();
-                scale += e.deltaY * -0.001;
-                scale = Math.min(Math.max(0.1, scale), 5);
-                updateTransform();
-            }, {passive: false});
-            
-            function updateTransform() { world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
-        </script>
-    </body>
-    </html>
+    <script src="/assets/js/modules/player-logic.js"></script>
+</body>
+
+</html>
