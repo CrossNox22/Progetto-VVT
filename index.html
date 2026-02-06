@@ -8,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">   
+    <link rel="stylesheet" href="assets/css/main.css">  
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script> 
 </head>
 
 <body>
@@ -34,7 +35,7 @@
         <strong class="desktop-title">DM CONSOLE</strong>
         
         <div class="toolbar-group desktop-buttons">
-            <button class="primary" onclick="openPlayerWindow()">📺 PLAYER</button>
+            <button class="primary" onclick="window.startHost()">📡 ONLINE</button>
             <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
             
             <div class="submenu-wrapper">

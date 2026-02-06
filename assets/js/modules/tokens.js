@@ -269,23 +269,44 @@ function setupTokenDrag(el, handle, id) {
         if (e.button !== 0) return;
         e.stopPropagation();
         dr = true; sx = e.clientX; sy = e.clientY; il = el.offsetLeft; it = el.offsetTop;
+        
+        // Z-Index Update
         state.tokens[id].z = ++state.map.highestZ;
         el.style.zIndex = state.map.highestZ;
-        syncTokenToPlayer(id);
+        
+        // Sync solo per Z-Index (opzionale, ma sicuro)
+        // Non serve syncare tutto durante il drag iniziale
     };
+    
     window.addEventListener('mousemove', e => {
         if (dr) {
             e.preventDefault();
             const dx = (e.clientX - sx) / state.map.scale;
             const dy = (e.clientY - sy) / state.map.scale;
-            el.style.left = (il + dx) + 'px';
-            el.style.top = (it + dy) + 'px';
-            state.tokens[id].x = il + dx;
-            state.tokens[id].y = it + dy;
-            syncTokenToPlayer(id);
+            
+            const newX = il + dx;
+            const newY = it + dy;
+            
+            // Aggiorna grafica locale
+            el.style.left = newX + 'px';
+            el.style.top = newY + 'px';
+            
+            // Aggiorna stato
+            state.tokens[id].x = newX;
+            state.tokens[id].y = newY;
+            
+            // --- MODIFICA CRUCIALE: BROADCAST LEGGERO ---
+            import('./player.js').then(m => m.broadcastTokenMove(id, newX, newY));
         }
     });
-    window.addEventListener('mouseup', () => dr = false);
+    
+    window.addEventListener('mouseup', () => {
+        if(dr) {
+            dr = false;
+            // Sync finale per assicurare che tutti abbiano gli ultimi dati (stats, ecc)
+            import('./player.js').then(m => m.syncTokenToPlayer(id));
+        }
+    });
 }
 
 function setupResize(el, handle, id, isProp) {

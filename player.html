@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Vista Giocatore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; background: #111; color: #eee; font-family: 'Cinzel', serif; overflow: hidden; }
+        
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        input, button { padding: 10px; font-size: 18px; margin: 5px; }
+        button { background: #922610; color: white; border: none; cursor: pointer; }
+        
+        #game-area { width: 100vw; height: 100vh; position: relative; overflow: hidden; cursor: grab; }
+        #game-area:active { cursor: grabbing; }
+        
+        #world-layer { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+        #map-img { display: block; pointer-events: none; }
+        
+        /* --- TOKEN HIGHER FIDELITY (120px) --- */
+        .token { 
+            position: absolute; 
+            width: 120px; /* DIMENSIONE MASTER */
+            display: flex; flex-direction: column; align-items: center;
+            z-index: 100; cursor: grab; 
+            transition: top 0.1s linear, left 0.1s linear; /* FLUIDITÀ MOVIMENTO */
+        }
+        .token.enemy { cursor: default; }
+        
+        .token-img {
+            width: 100px; height: 100px; /* Immagine interna */
+            border-radius: 8px; 
+            border: 3px solid white; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8); 
+            object-fit: cover; 
+            background: #000;
+            pointer-events: none;
+        }
+
+        .token-name {
+            background: rgba(0,0,0,0.8); color: white; 
+            padding: 3px 8px; border-radius: 4px; font-size: 14px; font-weight: bold;
+            white-space: nowrap; margin-bottom: 4px;
+            text-shadow: 1px 1px 0 #000; pointer-events: none;
+            border: 1px solid #555;
+            position: absolute; top: -25px;
+        }
+
+        .hp-bar-container {
+            width: 90px; height: 12px; background: #222; 
+            border: 2px solid #fff; position: absolute; bottom: 5px; z-index: 5;
+            pointer-events: none; border-radius: 3px;
+        }
+        .hp-bar-fill { height: 100%; background: #4CAF50; transition: width 0.3s; }
+        .hp-text {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            font-size: 12px; color: white; font-weight: bold;
+            text-shadow: 2px 2px 0 #000; letter-spacing: 1px; white-space: nowrap;
+        }
+
+        .stats-row {
+            display: flex; justify-content: space-between; width: 110px; 
+            position: absolute; top: 10px; z-index: 10; pointer-events: none;
+        }
+        .stat-box {
+            width: 26px; height: 26px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; font-size: 13px; 
+            border: 2px solid #fff; border-radius: 6px; color: #fff;
+            text-shadow: 1px 1px 0 #000; box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+        }
+        .ac-box { background: #2196F3; } 
+        .spell-box { background: #9C27B0; } 
+
+        .status-overlay {
+            position: absolute; top: 0px; right: 0px; 
+            display: flex; flex-direction: column; gap: 3px; pointer-events: none;
+        }
+        .status-icon {
+            width: 20px; height: 20px; background: rgba(0,0,0,0.9); 
+            border: 2px solid #FF9800; border-radius: 50%; color: #fff; 
+            font-size: 12px; display: flex; align-items: center; justify-content: center;
+        }
+
+        .prop { position: absolute; pointer-events: auto; cursor: grab; }
+        .prop img { display: block; pointer-events: none; }
+        
+        #ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .ui-panel { pointer-events: auto; background: rgba(15, 15, 15, 0.95); border: 2px solid #922610; color: white; padding: 10px; position: absolute; border-radius: 6px; box-shadow: 0 0 15px rgba(0,0,0,0.8); }
+        
+        #inventory-panel { bottom: 20px; right: 20px; display: none; width: 300px; max-height: 400px; overflow-y: auto; }
+        #init-panel { top: 20px; left: 20px; display: none; min-width: 150px; }
+        .init-row { padding: 5px; border-bottom: 1px solid #444; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <h1 style="color:#922610; text-shadow:0 0 10px #000;">Connessione Partita</h1>
+        <input type="text" id="host-id-input" placeholder="Inserisci ID Sessione">
+        <button onclick="connectToGame()">ENTRA</button>
+        <div id="status-msg" style="margin-top: 10px; color: #888;"></div>
+    </div>
+
+    <div id="game-area">
+        <div id="world-layer">
+            <img id="map-img" src="">
+        </div>
+    </div>
+
+    <div id="ui-layer">
+        <div id="init-panel" class="ui-panel"></div>
+        <div id="inventory-panel" class="ui-panel">
+            <h3 id="inv-title" style="margin:0 0 10px 0; border-bottom:1px solid #922610; padding-bottom:5px; text-align:center;">Zaino</h3>
+            <div id="inv-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let peer, conn;
+        let scale = 1, panX = 0, panY = 0;
+        
+        function connectToGame() {
+            const hostId = document.getElementById('host-id-input').value.trim();
+            if(!hostId) return;
+            document.getElementById('status-msg').textContent = "Connessione in corso...";
+            
+            peer = new Peer(); 
+            peer.on('open', (id) => {
+                conn = peer.connect(hostId);
+                conn.on('open', () => {
+                    document.getElementById('login-overlay').style.display = 'none';
+                    console.log("Connesso!");
+                });
+                conn.on('data', handleData);
+                conn.on('error', (err) => alert("Errore: " + err));
+            });
+        }
+
+        function handleData(d) {
+            if(d.type === 'SYNC_MAP') document.getElementById('map-img').src = d.payload.src;
+            else if(d.type === 'SPAWN_TOKEN') spawnToken(d.payload);
+            else if(d.type === 'REMOVE_TOKEN') { const e = document.getElementById(d.payload.id); if(e) e.remove(); }
+            else if(d.type === 'SPAWN_PROP') spawnProp(d.payload);
+            
+            // AGGIORNAMENTO POSIZIONE OTTIMIZZATO (Senza ricreare il DOM)
+            else if(d.type === 'UPDATE_POS') {
+                const el = document.getElementById(d.payload.id);
+                if(el) { 
+                    el.style.left = d.payload.x + 'px'; 
+                    el.style.top = d.payload.y + 'px'; 
+                }
+            }
+            
+            else if(d.type === 'SYNC_INIT') {
+                const p = document.getElementById('init-panel');
+                if(d.payload.length > 0) {
+                    p.style.display = 'block';
+                    p.innerHTML = "<h3 style='margin:0 0 5px 0; color:#FF9800; text-align:center;'>Iniziativa</h3>" + 
+                        d.payload.map(i => `<div class="init-row"><span style="color:#FF9800; font-weight:bold;">${i.val}</span> <span>${i.name}</span></div>`).join('');
+                } else { p.style.display = 'none'; }
+            }
+            else if(d.type === 'SYNC_INVENTORY') {
+                const p = document.getElementById('inventory-panel');
+                if(d.payload.open) {
+                    p.style.display = 'block';
+                    document.getElementById('inv-title').textContent = "Zaino: " + d.payload.title;
+                    document.getElementById('inv-list').innerHTML = d.payload.items.map(i => 
+                        `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding:5px; font-size:14px;">
+                            <span>${i.n||i.name}</span> <span style="color:#FF9800; font-weight:bold;">x${i.q||i.qty}</span>
+                        </div>`
+                    ).join('');
+                } else { p.style.display = 'none'; }
+            }
+        }
+
+        let dragItem = null;
+        let dragOffsetX, dragOffsetY;
+
+        function spawnToken(d) {
+            const old = document.getElementById(d.id);
+            if(old) old.remove();
+            if(d.hidden) return;
+
+            const el = document.createElement('div');
+            el.id = d.id;
+            el.className = 'token ' + (d.isEnemy ? 'enemy' : 'hero');
+            el.style.left = d.x + 'px';
+            el.style.top = d.y + 'px';
+            el.style.zIndex = d.z;
+            if(d.scale) el.style.transform = `scale(${d.scale})`;
+
+            // COSTRUZIONE HTML INTERNO
+            let inner = `<div class="token-name">${d.name}</div>`;
+            inner += `<img src="${d.image}" class="token-img">`;
+            
+            let statsHtml = '';
+            if(!d.isEnemy || d.statsVisible) { 
+                statsHtml += `<div class="ac-box stat-box">${d.ac}</div>`;
+                if(!d.isEnemy && d.spellSlots) {
+                     let avail = 0; d.spellSlots.forEach(s => avail += (s.max - s.used));
+                     if(avail > 0) statsHtml += `<div class="spell-box stat-box">${avail}</div>`;
+                }
+            }
+            if(statsHtml) inner += `<div class="stats-row">${statsHtml}</div>`;
+
+            let statusHtml = '';
+            if(d.statuses && d.statuses.length > 0) {
+                d.statuses.forEach(s => statusHtml += `<div class="status-icon">${s.charAt(0)}</div>`);
+                inner += `<div class="status-overlay">${statusHtml}</div>`;
+            }
+
+            let pct = Math.max(0, Math.min(100, (d.hpCurrent / d.hpMax) * 100));
+            let color = pct > 50 ? "#4CAF50" : (pct > 25 ? "#FFC107" : "#F44336");
+            inner += `<div class="hp-bar-container"><div class="hp-bar-fill" style="width:${pct}%; background:${color};"></div><div class="hp-text">${d.hpCurrent}/${d.hpMax}</div></div>`;
+
+            el.innerHTML = inner;
+            document.getElementById('world-layer').appendChild(el);
+
+            el.addEventListener('mousedown', (e) => {
+                if(d.isEnemy) return; 
+                e.stopPropagation();
+                dragItem = el;
+                const rect = el.getBoundingClientRect();
+                dragOffsetX = (e.clientX - rect.left) / scale;
+                dragOffsetY = (e.clientY - rect.top) / scale;
+            });
+        }
+        
+        function spawnProp(d) {
+             const el = document.createElement('div');
+             el.id = d.id;
+             el.className = 'prop';
+             el.style.left = d.x + 'px'; el.style.top = d.y + 'px';
+             el.style.zIndex = d.z;
+             el.innerHTML = `<img src="${d.image}" style="transform:scale(${d.scale || 1})">`;
+             document.getElementById('world-layer').appendChild(el);
+             el.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                dragItem = el;
+                const rect = el.getBoundingClientRect();
+                dragOffsetX = (e.clientX - rect.left) / scale;
+                dragOffsetY = (e.clientY - rect.top) / scale;
+             });
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if(dragItem) {
+                const worldRect = document.getElementById('world-layer').getBoundingClientRect();
+                const x = (e.clientX - worldRect.left) / scale - dragOffsetX;
+                const y = (e.clientY - worldRect.top) / scale - dragOffsetY;
+                dragItem.style.left = x + 'px'; dragItem.style.top = y + 'px';
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if(dragItem && conn) {
+                conn.send({ type: 'MOVE_REQUEST', payload: { id: dragItem.id, x: parseFloat(dragItem.style.left), y: parseFloat(dragItem.style.top) } });
+                dragItem = null;
+            }
+        });
+
+        const gameArea = document.getElementById('game-area');
+        const world = document.getElementById('world-layer');
+        let isPanning = false, startPanX, startPanY;
+
+        gameArea.addEventListener('mousedown', e => {
+            if(e.target === gameArea || e.target === world || e.target.id === 'map-img') {
+                isPanning = true;
+                startPanX = e.clientX - panX;
+                startPanY = e.clientY - panY;
+            }
+        });
+
+        window.addEventListener('mousemove', e => {
+            if(isPanning) {
+                panX = e.clientX - startPanX;
+                panY = e.clientY - startPanY;
+                updateTransform();
+            }
+        });
+
+        window.addEventListener('mouseup', () => isPanning = false);
+        window.addEventListener('wheel', e => {
+            e.preventDefault();
+            scale += e.deltaY * -0.001;
+            scale = Math.min(Math.max(0.1, scale), 5);
+            updateTransform();
+        }, {passive: false});
+
+        function updateTransform() { world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
+    </script>
+</body>
+</html>
