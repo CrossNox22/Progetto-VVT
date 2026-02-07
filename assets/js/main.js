@@ -26,12 +26,24 @@ window.loadSessionFile = function(file) {
     reader.onload = (e) => {
         try {
             const s = JSON.parse(e.target.result);
-            if (s.map && state.dom.mapImg) { state.dom.mapImg.src = s.map; state.dom.mapImg.style.width = "100%"; }
             
+            // --- 1. FIX MAPPA: USA DIMENSIONI REALI ---
+            if (s.map && state.dom.mapImg) { 
+                // Rimuovi lo stile che schiacciava la mappa
+                state.dom.mapImg.style.width = "auto";
+                state.dom.mapImg.style.height = "auto";
+                state.dom.mapImg.style.maxWidth = "none"; 
+                
+                // Imposta la sorgente
+                state.dom.mapImg.src = s.map; 
+            }
+            
+            // Pulizia
             document.querySelectorAll('.token-container').forEach(el => el.remove()); 
             document.querySelectorAll('.prop-container').forEach(el => el.remove());
             state.tokens = {}; state.props = {}; state.initiative = [];
             
+            // Ripristino Dati
             if (s.time) state.time.minutes = s.time;
             if (s.month) state.time.monthName = s.month;
             if (s.year) state.time.year = s.year;
@@ -44,9 +56,43 @@ window.loadSessionFile = function(file) {
             if (s.props) s.props.forEach(p => tokens.spawnProp(p)); 
             if (s.init) state.initiative = s.init;
             
+            // Aggiornamento UI
             env.updateClockUI();
             if(window.renderInitiative) window.renderInitiative();
-            setTimeout(() => { map.syncMap(); player.syncClockToPlayer(); player.syncInitiativeToPlayer(); }, 200);
+            
+            // --- 2. FIX SYNC PLAYER (FONDAMENTALE) ---
+            setTimeout(() => { 
+                // Aggiorna la vista locale del Master (applica zoom corretto se salvato o reset)
+                map.updateWorldTransform();
+                
+                // Importiamo multiplayer.js per inviare tutto ai giocatori
+                import('./modules/multiplayer.js').then(mp => {
+                    if (mp.broadcast) {
+                        // A. Mappa
+                        if(state.dom.mapImg) mp.broadcast('SYNC_MAP', { src: state.dom.mapImg.src });
+                        
+                        // B. Vista (Zoom e Posizione attuali del Master)
+                        mp.broadcast('SYNC_VIEW', { 
+                            x: state.map.x, 
+                            y: state.map.y, 
+                            scale: state.map.scale 
+                        });
+                        
+                        // C. Token & Props
+                        Object.values(state.tokens).forEach(t => {
+                            if(!t.hidden) mp.broadcast('SPAWN_TOKEN', t);
+                        });
+                        Object.values(state.props).forEach(p => mp.broadcast('SPAWN_PROP', p));
+                        
+                        // D. Tempo & Init
+                        player.syncClockToPlayer(); 
+                        player.syncInitiativeToPlayer();
+                    }
+                });
+                
+                // Sync locale legacy
+                map.syncMap(); 
+            }, 500); // Tempo per caricare l'immagine
 
             alert("Sessione caricata con successo!");
             window.startNewSession();

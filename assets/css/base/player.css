@@ -1,0 +1,99 @@
+/* player.css - Stili specifici per la vista giocatore */
+
+body {
+    background-color: #111; /* Sfondo scuro per immersione */
+    overflow: hidden;
+}
+
+/* OVERLAY LOGIN */
+#login-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); z-index: 9999;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.login-box {
+    text-align: center;
+    background: #FFF7E6;
+    padding: 40px;
+    border: 2px solid #922610;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(146, 38, 16, 0.5);
+}
+
+#status-msg { margin-top: 15px; color: #555; font-style: italic; }
+
+/* AREA GIOCO */
+#game-area {
+    width: 100vw; height: 100vh;
+    position: relative; overflow: hidden;
+    cursor: grab;
+}
+#game-area:active { cursor: grabbing; }
+
+#world-layer {
+    position: absolute; top: 0; left: 0; transform-origin: 0 0;
+}
+
+#map-img {
+    display: block;
+    pointer-events: none;
+    max-width: none; /* <-- IMPORTANTE */
+    width: auto;     /* <-- IMPORTANTE */
+}
+
+/* UI PANEL (Zaino e Init) */
+#ui-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; /* Lascia passare i click alla mappa */
+    z-index: 1000;
+}
+
+.ui-panel {
+    pointer-events: auto; /* Riabilita click sui pannelli */
+    position: absolute;
+    background: rgba(15, 15, 15, 0.95);
+    border: 2px solid #922610;
+    color: #e0e0e0;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    display: none; /* Nascosti di default */
+}
+
+/* Posizioni specifiche */
+#inventory-panel {
+    bottom: 20px; right: 20px;
+    width: 300px; max-height: 400px;
+    overflow-y: auto;
+}
+
+#init-panel {
+    top: 20px; left: 20px;
+    min-width: 200px;
+}
+
+/* STILI INTERNI ZAINO */
+#inv-title {
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #922610;
+    padding-bottom: 5px;
+    text-align: center;
+    color: #FF9800;
+    font-family: 'Cinzel', serif;
+}
+
+.p-inv-row {
+    display: flex; justify-content: space-between;
+    border-bottom: 1px solid #333; padding: 5px;
+    font-family: 'Segoe UI', sans-serif; font-size: 14px;
+}
+
+.p-inv-qty { color: #FF9800; font-weight: bold; }
+
+/* STILI INIZIATIVA */
+.p-init-row {
+    display: flex; align-items: center; padding: 5px;
+    border-bottom: 1px solid #444;
+}
+.p-init-val { color: #FF9800; font-weight: bold; margin-right: 10px; width: 25px;}

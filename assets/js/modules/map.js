@@ -16,9 +16,15 @@ export function resetView() {
 }
 
 export function updateWorldTransform() {
+    // 1. Aggiorna la vista del Master (Locale)
     if (state.dom.worldLayer) {
         state.dom.worldLayer.style.transform = `translate(${state.map.x}px,${state.map.y}px) scale(${state.map.scale})`;
     }
+    
+    // --- ABBIAMO RIMOSSO IL BROADCAST 'SYNC_VIEW' QUI ---
+    // Ora il Master NON costringe più il Player a seguirlo.
+    
+    // Mantiene la compatibilità con la vecchia finestra popup locale
     syncWorldView();
 }
 
@@ -84,13 +90,40 @@ export function initMapControls() {
 export function handleMapUpload(file) {
     if (!file) return;
     const reader = new FileReader();
+    
     reader.onload = e => {
         if (state.dom.mapImg) {
+            // 1. Imposta la sorgente e rimuove costrizioni CSS
+            state.dom.mapImg.style.width = "auto";
+            state.dom.mapImg.style.height = "auto";
             state.dom.mapImg.src = e.target.result;
-            state.dom.mapImg.style.width = "100%";
-            resetView();
-            // Piccolo timeout per attendere il rendering prima della sync
-            setTimeout(syncMap, 200);
+            
+            // 2. Aspetta che l'immagine sia caricata per leggere le dimensioni reali
+            state.dom.mapImg.onload = () => {
+                const imgW = state.dom.mapImg.naturalWidth;
+                const areaW = state.dom.gameArea.clientWidth;
+                
+                // 3. Calcola lo ZOOM iniziale invece di forzare la larghezza
+                // Se l'immagine è più grande dello schermo, riduciamo lo zoom (scale)
+                let startScale = 1;
+                if (imgW > areaW) {
+                    startScale = areaW / imgW;
+                }
+                
+                // Applica il nuovo zoom e resetta la posizione
+                state.map.scale = startScale;
+                state.map.x = 0;
+                state.map.y = 0;
+                
+                updateWorldTransform(); // Questo invierà il nuovo zoom al Player!
+                
+                // Sync finale (invia l'immagine al player)
+                setTimeout(() => {
+                    import('./multiplayer.js').then(m => {
+                        if(m.broadcast) m.broadcast('SYNC_MAP', { src: state.dom.mapImg.src });
+                    });
+                }, 200);
+            };
         }
     };
     reader.readAsDataURL(file);

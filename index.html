@@ -3,20 +3,22 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Piero DM Console - Final Stable</title>
+    <title>Vista DM Console</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">  
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script> 
+    <link rel="shortcut icon" href="/assets/media/img/cross-logo.ico" type="image/x-icon">
 </head>
 
 <body>
     <div id="start-screen">
         <div class="start-content">
-            <h1 style="color: #922610; font-size: 60px; margin-bottom: 10px; text-shadow: 0 0 20px #C8102E(255, 152, 0, 0.5);">PIERO DM CONSOLE</h1>
-            <p style="color: #aaa; margin-bottom: 40px; font-style: italic;">La suite definitiva per i Dungeon Master</p>
+            <h1 style="color: #922610; font-size: 60px; margin-bottom: 15px; text-shadow: 0 0 20px #C8102E(255, 152, 0, 0.5);">PIERO DM CONSOLE</h1>
+            <img src="Gemini_Generated_Image_5tlfk05tlfk05tlf.png" alt="" style="width: 150px; margin-bottom: 15px;">
+            <p style="color: #aaa; margin-bottom: 30px; font-style: italic;">La suite definitiva per i Dungeon Master</p>
             
             <div class="start-buttons">
                 <button class="primary big-btn" onclick="startNewSession()">🗺️ NUOVA SESSIONE</button>
@@ -32,7 +34,9 @@
     </div>
     
     <div id="toolbar">
+        <img src="/assets/media/img/cross-logo.png" alt="" style="width: 40px; margin-bottom: 8px;border-radius: 100%; margin-top: 5px;">
         <strong class="desktop-title">DM CONSOLE</strong>
+        
         
         <div class="toolbar-group desktop-buttons">
             <button class="primary" onclick="window.startHost()">📡 ONLINE</button>
@@ -53,18 +57,22 @@
                 </div>
             </div>
             <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
-            <div class="separator"></div>
+            
             <button onclick="toggleClock()">🕰️ Orologio</button>
             <button onclick="toggleMusic()">🎵 Musica</button>
             <button onclick="toggleWeather()">⛈️ Meteo</button>
-            <div class="separator"></div>
+            
             <button class="save-session" onclick="downloadSession()">💾 SALVA</button>
         </div>
         
-        <div class="toolbar-group">
-            <button onclick="changeZoom(0.1)">➕</button>
-            <button onclick="changeZoom(-0.1)">➖</button>
-            <button onclick="resetView()">Reset</button>
+        <div class="search-container">
+            <button class="main-button" onclick="toggleMenu()">🔍</button>
+            
+            <div id="zoomMenu" class="dropdown-content">
+                <button onclick="changeZoom(0.1)">➕ Ingrandisci</button>
+                <button onclick="changeZoom(-0.1)">➖ Rimpicciolisci</button>
+                <button onclick="resetView()">🔄 Reset</button>
+            </div>
         </div>
         
         <div class="mobile-menu">
@@ -87,7 +95,7 @@
     <input type="file" id="upload-prop" accept="image/*" style="display:none" onclick="this.value=null">
     <input type="file" id="upload-session" accept=".ses,.json" style="display:none" onclick="this.value=null">
     <input type="file" id="upload-music" accept="audio/*" multiple style="display:none" onclick="this.value=null">
-      
+    
     <div id="game-area">
         <div id="sky-layer">
             <div id="stars-container"></div>
@@ -111,9 +119,9 @@
                 <div id="storm-flash" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; opacity:0;"></div>
             </div>
             
-            </div>
+        </div>
     </div>
-        
+    
     <div id="clock-panel" class="floating-panel">
         <div id="clock-display" class="clock-time">08:00</div>
         <div class="calendar-controls">
@@ -366,4 +374,5 @@
 <script type="module" src="assets/js/modules/character-sheet.js"></script> <script type="module" src="assets/js/main.js"></script>
 
 </body>
+
 </html>

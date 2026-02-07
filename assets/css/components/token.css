@@ -512,3 +512,9 @@ input[type=number] {
 .token-image-upload:hover .upload-overlay {
     transform: translateY(0); /* Appare salendo */
 }
+
+/* --- AGGIUNTA PER MOVIMENTO FLUIDO --- */
+.token-container, .prop-container {
+    /* Animazione fluida di 0.1s quando cambiano top/left */
+    transition: top 0.1s linear, left 0.1s linear; 
+}

@@ -53,6 +53,9 @@ function setupPropDrag(el, id) {
         if (e.button !== 0 || e.target.tagName === 'BUTTON' || e.target.className.includes('resize')) return;
         e.stopPropagation();
         dr = true; sx = e.clientX; sy = e.clientY; il = el.offsetLeft; it = el.offsetTop;
+        
+        el.style.transition = "none"; // <--- AGGIUNTO
+        
         state.props[id].z = ++state.map.highestZ;
         el.style.zIndex = state.map.highestZ;
         syncPropToPlayer(id);
@@ -69,7 +72,12 @@ function setupPropDrag(el, id) {
             syncPropToPlayer(id);
         }
     });
-    window.addEventListener('mouseup', () => dr = false);
+    window.addEventListener('mouseup', () => {
+        if(dr) {
+            dr = false;
+            el.style.transition = ""; // <--- AGGIUNTO
+        }
+    });
 }
 
 // --- GESTIONE TOKEN (EROI E NEMICI) ---
@@ -270,13 +278,40 @@ function setupTokenDrag(el, handle, id) {
         e.stopPropagation();
         dr = true; sx = e.clientX; sy = e.clientY; il = el.offsetLeft; it = el.offsetTop;
         
-        // Z-Index Update
+        // DISATTIVA TRANSIZIONI DURANTE IL DRAG (Per evitare effetto "gomma")
+        el.style.transition = "none";
+        
         state.tokens[id].z = ++state.map.highestZ;
         el.style.zIndex = state.map.highestZ;
-        
-        // Sync solo per Z-Index (opzionale, ma sicuro)
-        // Non serve syncare tutto durante il drag iniziale
     };
+    
+    window.addEventListener('mousemove', e => {
+        if (dr) {
+            e.preventDefault();
+            const dx = (e.clientX - sx) / state.map.scale;
+            const dy = (e.clientY - sy) / state.map.scale;
+            const newX = il + dx;
+            const newY = it + dy;
+            
+            el.style.left = newX + 'px';
+            el.style.top = newY + 'px';
+            
+            state.tokens[id].x = newX;
+            state.tokens[id].y = newY;
+            
+            import('./player.js').then(m => m.broadcastTokenMove(id, newX, newY));
+        }
+    });
+    
+    window.addEventListener('mouseup', () => {
+        if(dr) {
+            dr = false;
+            // RIATTIVA TRANSIZIONI (Rimuovendo l'override inline)
+            el.style.transition = ""; 
+            import('./player.js').then(m => m.syncTokenToPlayer(id));
+        }
+    });
+}
     
     window.addEventListener('mousemove', e => {
         if (dr) {
@@ -307,7 +342,7 @@ function setupTokenDrag(el, handle, id) {
             import('./player.js').then(m => m.syncTokenToPlayer(id));
         }
     });
-}
+
 
 function setupResize(el, handle, id, isProp) {
     let startY, startScale;
