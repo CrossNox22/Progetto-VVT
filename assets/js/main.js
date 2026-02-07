@@ -270,8 +270,13 @@ document.addEventListener("DOMContentLoaded", () => {
     env.initStars();
     env.updateClockUI();
     map.initMapControls();
+    
+    // 1. INIZIALIZZA BOTTONE SEGRETO DADI
+    if (dice.initSecretButton) {
+        dice.initSecretButton();
+    }
 
-    // Listener Mappa
+    // 2. LISTENER MAPPA (Corretto: una sola dichiarazione)
     const mapUpload = document.getElementById('upload-map');
     if (mapUpload) {
         const newMapUpload = mapUpload.cloneNode(true);

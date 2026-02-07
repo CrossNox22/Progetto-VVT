@@ -55,6 +55,16 @@ function handleDataFromPlayer(data) {
             broadcast('UPDATE_POS', { id, x, y });
         }
     }
+
+    // --- NUOVO: GESTIONE DADI REMOTI ---
+    if (data.type === 'ROLL_NOTIFY') {
+        const { name, roll, die } = data.payload;
+        
+        // Importiamo il modulo dadi per mostrare il risultato al Master
+        import('./dice.js').then(diceMod => {
+            diceMod.showRemoteResult(name, roll, die);
+        });
+    }
 }
 
 // --- SYNC COMPLETO (Quando un giocatore entra) ---
@@ -78,3 +88,4 @@ function fullSyncToPlayer(conn) {
 
 // --- ESPORTA PER MAIN ---
 window.startHost = initHost;
+window.broadcast = broadcast;

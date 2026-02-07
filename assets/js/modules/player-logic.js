@@ -1,4 +1,5 @@
-/* assets/js/modules/player-logic.js - DEBUG VERSION */
+/* assets/js/modules/player-logic.js - VERSIONE CON RICEZIONE DADI */
+import { rollDie, showRemoteResult } from './dice.js';
 
 let peer, conn;
 let scale = 1, panX = 0, panY = 0;
@@ -44,40 +45,20 @@ function handleData(d) {
     else if(d.type === 'SPAWN_TOKEN') {
         const updatedToken = d.payload;
         const idStr = String(updatedToken.id);
-        
-        console.log(`PLAYER: Ricevuto update per ${updatedToken.name} (ID: ${idStr})`);
-        
-        // 1. Aggiorna DB Locale
         localTokens[idStr] = updatedToken;
-        
-        // 2. Aggiorna Grafica Mappa
         spawnToken(updatedToken);
         
-        // 3. --- LIVE REFRESH ---
-        // Se stiamo guardando la scheda di QUESTO token, forziamo l'aggiornamento
         if (currentOpenTokenId === idStr) {
-            console.log("PLAYER: Aggiornamento scheda aperta...");
             const sheetModal = document.getElementById('sheet-modal');
             const invModal = document.getElementById('inventory-modal');
-            
-            // Verifica se è visibile (controllo stile inline o computed)
-            const isSheetVisible = sheetModal && (sheetModal.style.display === 'flex' || sheetModal.style.display === 'block');
-            const isInvVisible = invModal && (invModal.style.display === 'flex' || invModal.style.display === 'block');
-            
-            if (isSheetVisible) {
-                openPlayerSheet(idStr);
-            }
-            if (isInvVisible) {
-                openPlayerInventory(idStr);
-            }
+            if (sheetModal && sheetModal.style.display !== 'none') openPlayerSheet(idStr);
+            if (invModal && invModal.style.display !== 'none') openPlayerInventory(idStr);
         }
     }
     else if(d.type === 'REMOVE_TOKEN') { 
         const el = document.getElementById(`tok-${d.payload.id}`); 
         if(el) el.remove();
         delete localTokens[String(d.payload.id)];
-        
-        // Chiudi se stavamo guardando questo
         if(currentOpenTokenId === String(d.payload.id)) closeModals();
     }
     else if(d.type === 'SPAWN_PROP') spawnProp(d.payload);
@@ -89,6 +70,11 @@ function handleData(d) {
     }
     else if(d.type === 'SYNC_INIT') renderInitiative(d.payload);
     else if(d.type === 'SYNC_INVENTORY') renderInventory(d.payload);
+    
+    // --- NUOVO: RICEZIONE DADI DAL MASTER (O ALTRI PLAYER) ---
+    else if (d.type === 'ROLL_NOTIFY') {
+        showRemoteResult(d.payload.name, d.payload.roll, d.payload.die);
+    }
 }
 
 function updateTransform() {
@@ -250,8 +236,7 @@ function closeModals() {
 
 function openPlayerSheet(id) {
     const idStr = String(id);
-    currentOpenTokenId = idStr; // Segna come aperto per il refresh automatico
-    
+    currentOpenTokenId = idStr;
     const d = localTokens[idStr];
     const modal = document.getElementById('sheet-modal');
     if(!modal) return;
@@ -306,8 +291,6 @@ function openPlayerSheet(id) {
 
     content.innerHTML = html;
     modal.style.display = 'flex';
-    
-    // Aggiorna anche il bottone chiudi per resettare l'ID
     const closeBtn = modal.querySelector('.modal-footer button');
     if(closeBtn) closeBtn.onclick = closeModals;
 }
@@ -315,7 +298,6 @@ function openPlayerSheet(id) {
 function openPlayerInventory(id) {
     const idStr = String(id);
     currentOpenTokenId = idStr;
-    
     const d = localTokens[idStr];
     const modal = document.getElementById('inventory-modal');
     if(!modal) return;
@@ -342,21 +324,14 @@ function openPlayerInventory(id) {
 // --- UI INIZIATIVA ---
 function renderInitiative(data) {
     const p = document.getElementById('init-panel');
-    if (!data || data.length === 0) { 
-        p.style.display = 'none'; 
-        return; 
-    }
+    if (!data || data.length === 0) { p.style.display = 'none'; return; }
     
     p.style.display = 'block';
     
-    // Header stile Master
     let html = `<div id="init-header"><span>Iniziativa</span></div><div id="init-list">`;
-    
     data.forEach(row => {
-        // Recupera l'immagine dal database locale usando l'ID
-        // Se il token non c'è (es. è nascosto o non caricato), usa un'immagine di default
         const tokenData = localTokens[String(row.id)];
-        const imgSrc = tokenData ? tokenData.image : 'assets/img/tokens/default_hero.png'; // Fallback sicuro
+        const imgSrc = tokenData ? tokenData.image : 'assets/img/tokens/default_hero.png';
         
         html += `
             <div class="init-row ${row.active ? 'active-turn' : ''}">
@@ -365,10 +340,10 @@ function renderInitiative(data) {
                 <span class="init-name">${row.name}</span>
             </div>`;
     });
-    
     html += `</div>`;
     p.innerHTML = html;
 }
+
 function renderInventory(data) { /* Legacy */
     const p = document.getElementById('inventory-panel');
     const l = document.getElementById('inv-list');
@@ -378,3 +353,28 @@ function renderInventory(data) { /* Legacy */
         data.items.forEach(i => { l.innerHTML += `<div class="p-inv-row"><span>${i.n||i.name}</span><span class="p-inv-qty">x${i.q||i.qty}</span></div>`; });
     } else { p.style.display = 'none'; }
 }
+
+// --- GESTIONE DADI PLAYER (D4, D6... D100) ---
+setTimeout(() => {
+    ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'].forEach(type => {
+        const btn = document.getElementById(`p-${type}`);
+        if(btn) {
+            btn.onclick = () => {
+                const sides = parseInt(type.replace('d', ''));
+                const result = rollDie(sides, "Tu");
+                
+                // Invia al Master
+                if(conn && conn.open) {
+                    conn.send({
+                        type: 'ROLL_NOTIFY',
+                        payload: {
+                            name: "Giocatore", 
+                            roll: result,
+                            die: type
+                        }
+                    });
+                }
+            };
+        }
+    });
+}, 500);

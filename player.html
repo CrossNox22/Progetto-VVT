@@ -11,10 +11,13 @@
     <link rel="stylesheet" href="assets/css/components/theme.css">
     <link rel="stylesheet" href="assets/css/components/token.css">
     <link rel="stylesheet" href="assets/css/components/animations.css">
-    <link rel="stylesheet" href="assets/css/components/modal.css">  <link rel="stylesheet" href="assets/css/components/panels.css"> <link rel="stylesheet" href="assets/css/components/dice.css">   <link rel="stylesheet" href="assets/css/base/player.css">
+    <link rel="stylesheet" href="assets/css/components/modal.css">  
+    <link rel="stylesheet" href="assets/css/components/panels.css"> 
+    <link rel="stylesheet" href="assets/css/components/dice.css">  
+    <link rel="stylesheet" href="assets/css/base/player.css">
     
     <link rel="shortcut icon" href="assets/media/img/cross-logo.ico" type="image/x-icon">
-
+    
     <style>
         /* FIX DI SICUREZZA INTERNO */
         /* Assicura che il layer meteo non blocchi mai i click sui token */
@@ -41,7 +44,7 @@
     <div id="game-area">
         <div id="world-layer">
             <img id="map-img" src="" class="map-layer">
-            </div>
+        </div>
         
         <div id="weather-layer" class=""></div>
     </div>
@@ -63,7 +66,7 @@
             </div>
         </div>
     </div>
-
+    
     <div id="inventory-modal" class="modal" style="display:none;">
         <div class="modal-content statblock-card">
             <h3 id="inv-title-modal" class="sb-title">Zaino</h3>
@@ -73,7 +76,18 @@
             </div>
         </div>
     </div>
-
+    
     <script type="module" src="assets/js/modules/player-logic.js"></script>
+    
+    <div id="dice-bar" class="dice-bar">
+        <button id="p-d4" class="dice-btn">d4</button>
+        <button id="p-d6" class="dice-btn">d6</button>
+        <button id="p-d8" class="dice-btn">d8</button>
+        <button id="p-d10" class="dice-btn">d10</button>
+        <button id="p-d12" class="dice-btn">d12</button>
+        <button id="p-d20" class="dice-btn" style="color: #c62828; border-color: #c62828;">d20</button>
+        <button id="p-d100" class="dice-btn" style="font-size: 11px;">d100</button>
+    </div>
+</div>
 </body>
 </html>
