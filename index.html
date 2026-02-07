@@ -34,52 +34,51 @@
     </div>
     
     <div id="toolbar">
-        <img src="/assets/media/img/cross-logo.png" alt="" style="width: 40px; margin-bottom: 8px;border-radius: 100%; margin-top: 5px; border: #761401 2.5px solid;">
         
-        <h5>
+        <!-- BRAND -->
+        <div class="toolbar-brand">
+            <img src="/assets/media/img/cross-logo.png" alt="">
             <strong class="desktop-title">CROSS CONSOLE</strong>
-        </h5>
+        </div>
         
-        <div class="toolbar-group desktop-buttons" style="padding-right: 25px;">
+        <!-- AZIONI DESKTOP -->
+        <div class="toolbar-actions desktop-buttons">
             <button class="primary" onclick="window.startHost()">📡 ONLINE</button>
             <button onclick="document.getElementById('upload-map').click()">📂 Map</button>
             
             <div class="submenu-wrapper">
                 <button onclick="toggleTokenMenu()">♟️ Token ▼</button>
-                
                 <div id="token-submenu" class="submenu-dropdown">
-                    <button class="submenu-item" onclick="document.getElementById('upload-token').click(); toggleTokenMenu()">
-                        📂 Import File
-                    </button>
-                    
+                    <button class="submenu-item" onclick="document.getElementById('upload-token').click(); toggleTokenMenu()">📂 Import File </button>
                     <button class="submenu-item" onclick="openCreationModal('hero'); toggleTokenMenu()">
                         🛠️ Create Token
                     </button>
-                    
                 </div>
             </div>
-            <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
             
+            <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
             <button onclick="toggleClock()">🕰️ Clock</button>
             <button onclick="toggleMusic()">🎵 Music</button>
-            <button onclick="toggleWeather()">⛈️ Meteo</button>            
+            <button onclick="toggleWeather()">⛈️ Meteo</button>
             <button class="save-session" onclick="downloadSession()">💾 Save</button>
         </div>
         
+        <!-- MOBILE -->
         <div class="mobile-menu">
             <button id="burger-btn">&#9776;</button>
             <div class="burger-dropdown">
                 <button onclick="openPlayerWindow()">📺 ONLINE</button>
                 <button onclick="document.getElementById('upload-map').click()">📂 Map</button>
-                <button onclick="document.getElementById('upload-token').click()">♟️ Token (Importa)</button>
+                <button onclick="document.getElementById('upload-token').click()">♟️ Token</button>
                 <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
                 <button onclick="toggleClock()">🕰️ Clock</button>
                 <button onclick="toggleMusic()">🎵 Music</button>
                 <button onclick="toggleWeather()">⛈️ Meteo</button>
-                <button class="save-session" onclick="downloadSession()">💾 Save</button>
+                <button onclick="downloadSession()">💾 Save</button>
             </div>
-        </div>
+        </div>        
     </div>
+    
     
     <input type="file" id="upload-map" accept="image/*" style="display:none" onclick="this.value=null">
     <input type="file" id="upload-token" accept=".dnd,.json" style="display:none" onclick="this.value=null">

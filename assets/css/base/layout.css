@@ -2,34 +2,51 @@
 
 /* TOOLBAR */
 #toolbar {
-    height: 60px;
+    height: 64px;
     background-color: #fdf1dc;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
+    justify-content: space-evenly;
+    padding: 0 16px;
     border-bottom: 3px solid #922610;
-    z-index: 2000;
     position: relative;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    gap: 16px;
 }
 
-#toolbar strong {
-    color: #922610 !important;
-    font-variant: small-caps;
-    font-size: 1.2em;
-    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
-}
-
-
-/* Gruppi nella toolbar */
-.toolbar-group {
+.toolbar-brand {
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-    /* consente ai pulsanti di andare a capo se necessario */
+    gap: 10px;
+    min-width: fit-content;
+}
+
+.toolbar-brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2.5px solid #761401;
+}
+
+.desktop-title {
+    font-variant: small-caps;
+    font-size: 1.2rem;
+    color: #922610;
+    white-space: nowrap;
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+#toolbar button {
+    padding: 5px 7px;
+    font-size: 13px;
+    border-radius: 7.5px;
+    white-space: nowrap;
 }
 
 /* AREA DI GIOCO */
@@ -171,35 +188,6 @@ body.loading #log-panel {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* MEDIA QUERY per schermi piccoli */
-@media (max-width: 768px) {
-    #toolbar {       
-        height: auto;
-        padding: 10px;
-    }
-    
-    .toolbar-group {
-        justify-content: center;
-        width: 100%;
-        margin-bottom: 5px;
-    }
-    
-    #game-area {
-        height: calc(100vh - 100px);
-    }
-    
-    .desktop-buttons {
-        display: none !important;
-        /* forza nascondere pulsanti desktop */
-    }
-    
-    .mobile-menu {
-        display: flex !important;
-        /* forza apparire hamburger */
-        align-items: center;
-    }
-}
-
 
 /* Desktop: mostrano i pulsanti */
 .desktop-buttons {
@@ -213,6 +201,24 @@ body.loading #log-panel {
     position: relative;
 }
 
+#burger-btn {
+    font-size: 18px!important;
+    /* dimensione icona ☰ */
+    padding: 4px 10px!important;
+    /* area cliccabile */
+    border-radius: 20px;
+    background-color: #EADCC1;
+    border: 2.2px solid #922610;
+    color: #7a1500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#burger-btn:hover {
+    background-color: #922610;
+    color: #fff;
+}
+
 /* Dropdown menu */
 .burger-dropdown {
     display: none;
@@ -220,14 +226,13 @@ body.loading #log-panel {
     top: 100%;
     right: 0;
     background: #fdf1dc;
-    border: 2px solid #922610;
+    border: 2.5px solid #922610;
     border-radius: 6px;
     flex-direction: column;
     min-width: 160px;
     z-index: 3000;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     font-family: 'Cinzel', serif;
-    /* font coerente con il resto */
 }
 
 .burger-dropdown button {
@@ -242,20 +247,6 @@ body.loading #log-panel {
 .burger-dropdown button:hover {
     background-color: #922610;
     color: #fff;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    
-    .desktop-buttons,
-    .desktop-title {
-        display: none;
-    }
-    
-    .mobile-menu {
-        display: flex;
-        align-items: center;
-    }
 }
 
 /* Contenitore principale della lente */
@@ -327,4 +318,37 @@ body.loading #log-panel {
 /* La classe magica che JS aggiunge/toglie */
 .show {
     display: block !important;
+}
+
+
+@media (max-width: 1024px) {
+    .toolbar-actions {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 768px) {  
+    .desktop-buttons,
+    .desktop-title {
+        display: none !important;
+    }
+    
+    #toolbar {
+        height: auto;
+        padding: 10px 14px;
+    }
+    
+    .mobile-menu {
+        display: flex;
+        align-items: center;
+    }
+    
+    #burger-btn {
+        font-size: 30px;
+        padding: 10px 16px;
+    }
+    
+    #game-area {
+        height: calc(100vh - 100px);
+    }
 }
