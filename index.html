@@ -257,7 +257,7 @@
             </div>
             
             <div class="token-image-upload" onclick="document.getElementById('input-token-img').click()">
-                <img id="token-preview-img" src="assets/img/tokens/default_hero.png" alt="Token">
+                <img id="token-preview-img" src="/assets/media/img/default_hero.png" alt="Token">
                 <div class="upload-overlay">CAMBIA FOTO</div>
                 <input type="file" id="input-token-img" accept="image/*" style="display:none" onchange="window.previewTokenImage(this)">
             </div>
@@ -337,45 +337,7 @@
                 <button class="dnd-btn-danger" onclick="document.getElementById('creation-modal').style.display='none'">Annulla</button>
                 <button class="dnd-btn-primary" onclick="submitTokenCreation()">Genera Token</button>
             </div>    
-        </div> 
-        
-        <div class="stats-grid-creation">
-            <div><label>STR</label><input type="number" id="input-str" value="10" class="dnd-input mini"></div>
-            <div><label>DEX</label><input type="number" id="input-dex" value="10" class="dnd-input mini"></div>
-            <div><label>CON</label><input type="number" id="input-con" value="10" class="dnd-input mini"></div>
-            <div><label>INT</label><input type="number" id="input-int" value="10" class="dnd-input mini"></div>
-            <div><label>WIS</label><input type="number" id="input-wis" value="10" class="dnd-input mini"></div>
-            <div><label>CHA</label><input type="number" id="input-cha" value="10" class="dnd-input mini"></div>
-        </div>
-        
-        <div class="form-row" style="margin-top:10px;">
-            <div class="form-col">
-                <label>Velocità (m):</label>
-                <input type="text" id="input-speed" value="9m" class="dnd-input">
-            </div>
-            <div class="form-col">
-                <label>Livello:</label>
-                <input type="number" id="input-level" value="1" class="dnd-input">
-            </div>
-        </div>
-        
-        <div id="hero-classes-section" style="display: block; margin-top: 15px; padding-top: 10px; border-top: 2px solid #922610;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <label style="color: #922610; font-weight: bold; font-variant: small-caps;">CLASSI & LIVELLI</label>
-                
-                <button id="btn-add-class" onclick="window.addMulticlassRow()" type="button" style="display:none; background: #922610; color: white; border: none; border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer;">
-                    + Aggiungi Classe
-                </button>
-            </div>
-            
-            <div id="classes-container"></div>
-            
-            <div style="margin-top: 10px; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
-                <label style="font-size: 12px; font-weight: bold; color: #333;">Bonus Competenza:</label>
-                <input type="text" id="input-prof" value="+2" 
-                style="width: 40px; border: none; border-bottom: 1px solid #922610; background: transparent; font-weight: bold; color: #922610; text-align: center;">
-            </div>
-        </div>
+        </div>   
     </div>
     
     <script type="module" src="assets/js/main.js"></script>       
