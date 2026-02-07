@@ -54,7 +54,7 @@ function setupPropDrag(el, id) {
         e.stopPropagation();
         dr = true; sx = e.clientX; sy = e.clientY; il = el.offsetLeft; it = el.offsetTop;
         
-        el.style.transition = "none"; // <--- AGGIUNTO
+        el.style.transition = "none";
         
         state.props[id].z = ++state.map.highestZ;
         el.style.zIndex = state.map.highestZ;
@@ -75,7 +75,7 @@ function setupPropDrag(el, id) {
     window.addEventListener('mouseup', () => {
         if(dr) {
             dr = false;
-            el.style.transition = ""; // <--- AGGIUNTO
+            el.style.transition = "";
         }
     });
 }
@@ -87,20 +87,17 @@ export function openCreationModal(type) {
     const title = document.getElementById('creation-title');
     const slotDiv = document.getElementById('slot-input-col');
 
-    // 1. Mostra la finestra di creazione
     document.getElementById('creation-modal').style.display = 'block';
-if (type === 'hero') {
-        // Importiamo dinamicamente per evitare dipendenze circolari strane
+    
+    if (type === 'hero') {
         import('./token-gen.js').then(module => {
             if (module.initClassForm) module.initClassForm();
         });
     }
 
-    // 2. NUOVO: Nasconde la schermata iniziale se è aperta
     const startScreen = document.getElementById('start-screen');
     if (startScreen) startScreen.style.display = 'none';
     
-    // Configura il titolo (Eroe o Nemico)
     if (type === 'enemy') {
         title.textContent = "Nuovo Nemico";
         title.style.color = "#FF9800";
@@ -110,41 +107,30 @@ if (type === 'hero') {
         title.style.color = "white";
         slotDiv.style.display = "block";
     }
-    
-    // Abbiamo disattivato l'apertura automatica del file per permettere l'inserimento manuale
-    // if (!state.selection.pendingImg) document.getElementById('upload-token').click();
 }
 
 export function submitTokenCreation() {
-    // 1. Recuperiamo il tipo (hero/enemy)
     const type = state.selection.creationType || 'hero';
-    
-    // 2. Recuperiamo l'immagine dall'anteprima (se è stata cambiata)
     const imgEl = document.getElementById('token-preview-img');
     let img = null;
     
-    // Se l'immagine NON contiene "default_", vuol dire che è stata caricata dall'utente
     if (imgEl && !imgEl.src.includes('default_')) {
         img = imgEl.src;
     }
 
-    // 3. Generiamo i dati e creiamo il token
     const tokenData = createTokenFromForm(type, img);
     spawnToken(tokenData);
 
-    // 4. Pulizia: Resetta i campi del form per la prossima volta
     if(document.getElementById('input-name')) document.getElementById('input-name').value = "";
     if(document.getElementById('input-hp')) document.getElementById('input-hp').value = "10";
     if(document.getElementById('input-ac')) document.getElementById('input-ac').value = "10";
     
-    // Resetta anche l'immagine di anteprima a quella di default
     if (imgEl) {
         imgEl.src = type === 'enemy' 
             ? "assets/img/tokens/default_enemy.png" 
             : "assets/img/tokens/default_hero.png";
     }
     
-    // 5. CHIUSURA MODALE (La parte che mancava!)
     document.getElementById('creation-modal').style.display = 'none';
 }
 
@@ -277,10 +263,7 @@ function setupTokenDrag(el, handle, id) {
         if (e.button !== 0) return;
         e.stopPropagation();
         dr = true; sx = e.clientX; sy = e.clientY; il = el.offsetLeft; it = el.offsetTop;
-        
-        // DISATTIVA TRANSIZIONI DURANTE IL DRAG (Per evitare effetto "gomma")
         el.style.transition = "none";
-        
         state.tokens[id].z = ++state.map.highestZ;
         el.style.zIndex = state.map.highestZ;
     };
@@ -306,43 +289,11 @@ function setupTokenDrag(el, handle, id) {
     window.addEventListener('mouseup', () => {
         if(dr) {
             dr = false;
-            // RIATTIVA TRANSIZIONI (Rimuovendo l'override inline)
             el.style.transition = ""; 
             import('./player.js').then(m => m.syncTokenToPlayer(id));
         }
     });
 }
-    
-    window.addEventListener('mousemove', e => {
-        if (dr) {
-            e.preventDefault();
-            const dx = (e.clientX - sx) / state.map.scale;
-            const dy = (e.clientY - sy) / state.map.scale;
-            
-            const newX = il + dx;
-            const newY = it + dy;
-            
-            // Aggiorna grafica locale
-            el.style.left = newX + 'px';
-            el.style.top = newY + 'px';
-            
-            // Aggiorna stato
-            state.tokens[id].x = newX;
-            state.tokens[id].y = newY;
-            
-            // --- MODIFICA CRUCIALE: BROADCAST LEGGERO ---
-            import('./player.js').then(m => m.broadcastTokenMove(id, newX, newY));
-        }
-    });
-    
-    window.addEventListener('mouseup', () => {
-        if(dr) {
-            dr = false;
-            // Sync finale per assicurare che tutti abbiano gli ultimi dati (stats, ecc)
-            import('./player.js').then(m => m.syncTokenToPlayer(id));
-        }
-    });
-
 
 function setupResize(el, handle, id, isProp) {
     let startY, startScale;
@@ -396,15 +347,10 @@ export function updateSpellBoxDisplay(b, d) {
     b.title = `Slot: ${avail}/${total}`;
 }
 
-// CORREZIONE CRUCIALE QUI: Riceviamo i dati da token-gen e chiamiamo noi spawnToken
 export function handleTokenUpload(file) {
     if(!file) return;
-
-    // --- AGGIUNTA FONDAMENTALE ---
-    // Resettiamo l'input file così il browser accetta di nuovo lo stesso file
     const inputEl = document.getElementById('upload-token');
     if (inputEl) inputEl.value = ''; 
-    // -----------------------------
 
     const r = new FileReader();
     r.onload = v => {
@@ -438,7 +384,7 @@ export function handlePropUpload(file) {
     r.readAsDataURL(file);
 }
 
-/* --- GESTIONE INIZIATIVA --- */
+/* --- GESTIONE INIZIATIVA (FIX CANCELLAZIONE) --- */
 
 export function addToInitiative(id, val) {
     const existing = state.initiative.find(i => i.id === id);
@@ -457,7 +403,8 @@ export function addToInitiative(id, val) {
 }
 
 export function removeFromInitiative(id) {
-    state.initiative = state.initiative.filter(i => i.id !== id);
+    // FIX 1: Convertiamo in stringa per evitare errori di tipo (Numero vs Stringa)
+    state.initiative = state.initiative.filter(i => String(i.id) !== String(id));
     renderInitiative();
 }
 
@@ -468,6 +415,10 @@ export function renderInitiative() {
 
     if (state.initiative.length === 0) {
         panel.style.display = 'none';
+        // Invia sync vuoto al player
+        if (typeof syncInitiativeToPlayer === 'function') {
+            syncInitiativeToPlayer();
+        }
         return;
     }
 
@@ -481,12 +432,21 @@ export function renderInitiative() {
         const row = document.createElement('div');
         row.className = `init-row ${init.active ? 'active' : ''}`;
         
+        // FIX 2: Creazione DOM per evitare problemi di scope con onclick=""
+        // Parte HTML statica
         row.innerHTML = `
             <span class="init-val">${init.val}</span>
             <img src="${d.image}" class="init-img">
             <span style="flex-grow:1">${d.name}</span>
-            <button class="mini-btn btn-del" onclick="removeFromInitiative('${init.id}')">x</button>
         `;
+        
+        // Creazione bottone X via Javascript
+        const btnDel = document.createElement('button');
+        btnDel.className = 'mini-btn btn-del';
+        btnDel.textContent = 'x';
+        btnDel.onclick = () => removeFromInitiative(init.id); // Qui passiamo la variabile diretta!
+        
+        row.appendChild(btnDel);
         list.appendChild(row);
     });
 
@@ -540,12 +500,10 @@ export function toggleQuickAttacks(id, tokenEl) {
 export function toggleTokenMenu() {
     const menu = document.getElementById('token-submenu');
     if (menu) {
-        // Se è aperto lo chiude, se è chiuso lo apre
         menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
     }
 }
 
-// Funzione per l'anteprima immediata dell'immagine caricata
 export function previewTokenImage(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();

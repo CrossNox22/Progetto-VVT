@@ -1,4 +1,4 @@
-/* assets/js/modules/modals.js - VERSIONE PULITA (Senza stili inline) */
+/* assets/js/modules/modals.js - DEBUG VERSION */
 import { state } from './state.js';
 import { syncTokenToPlayer } from './player.js';
 import { updateHpVisuals, updateStatusVisuals, updateSpellBoxDisplay } from './tokens.js';
@@ -28,19 +28,48 @@ export function openSheet(id) {
     document.getElementById('sheet-modal').style.display = 'flex';
 }
 
-export function updateTokenData(key, val) { if(state.selection.currentSheetId) { state.tokens[state.selection.currentSheetId][key] = val; syncTokenToPlayer(state.selection.currentSheetId); } }
-export function updateDetail(key, val) { if(state.selection.currentSheetId) state.tokens[state.selection.currentSheetId].details[key] = val; }
+// --- SYNC HELPER ---
+function triggerSync(id) {
+    console.log(`MASTER: Sync avviato per token ${id}`);
+    syncTokenToPlayer(id);
+}
+
+// --- AGGIORNAMENTO DATI BASE ---
+export function updateTokenData(key, val) { 
+    if(state.selection.currentSheetId) { 
+        state.tokens[state.selection.currentSheetId][key] = val; 
+        triggerSync(state.selection.currentSheetId); 
+    } 
+}
+export function updateDetail(key, val) { 
+    if(state.selection.currentSheetId) {
+        state.tokens[state.selection.currentSheetId].details[key] = val; 
+        triggerSync(state.selection.currentSheetId);
+    }
+}
 
 // --- TRATTI ---
-export function addTraitRow() { state.tokens[state.selection.currentSheetId].traits.push({name:"", desc:""}); renderTraits(); }
-export function updateTrait(ix, key, val) { state.tokens[state.selection.currentSheetId].traits[ix][key] = val; }
-export function removeTrait(ix) { if(confirm("Rimuovere?")){ state.tokens[state.selection.currentSheetId].traits.splice(ix, 1); renderTraits(); } }
+export function addTraitRow() { 
+    state.tokens[state.selection.currentSheetId].traits.push({name:"", desc:""}); 
+    renderTraits(); 
+    triggerSync(state.selection.currentSheetId); 
+}
+export function updateTrait(ix, key, val) { 
+    state.tokens[state.selection.currentSheetId].traits[ix][key] = val; 
+    triggerSync(state.selection.currentSheetId); 
+}
+export function removeTrait(ix) { 
+    if(confirm("Rimuovere?")){ 
+        state.tokens[state.selection.currentSheetId].traits.splice(ix, 1); 
+        renderTraits(); 
+        triggerSync(state.selection.currentSheetId); 
+    } 
+}
 
 export function renderTraits() {
     const c = document.getElementById('traits-list'); if(!c) return;
     c.innerHTML = "";
     state.tokens[state.selection.currentSheetId].traits.forEach((t, ix) => {
-        // Rimossi stili inline pesanti, usa classi CSS se possibile
         c.innerHTML += `
             <div class="trait-block" style="margin-bottom:10px;">
                 <div style="display:flex;justify-content:space-between; margin-bottom:2px;">
@@ -53,10 +82,26 @@ export function renderTraits() {
 }
 
 // --- ATTACCHI ---
-export function addAttackRow() { state.tokens[state.selection.currentSheetId].attacks.push({name:"", hit:"+0", dmg:"1d4"}); renderAttacks(); }
-export function removeAttackRow(ix) { if(confirm("Eliminare?")){ state.tokens[state.selection.currentSheetId].attacks.splice(ix, 1); renderAttacks(); } }
-export function updateAttack(ix, k, v) { state.tokens[state.selection.currentSheetId].attacks[ix][k] = v; }
-export function updateAttackCount(v) { state.tokens[state.selection.currentSheetId].attackCount = parseInt(v)||1; }
+export function addAttackRow() { 
+    state.tokens[state.selection.currentSheetId].attacks.push({name:"", hit:"+0", dmg:"1d4"}); 
+    renderAttacks(); 
+    triggerSync(state.selection.currentSheetId); 
+}
+export function removeAttackRow(ix) { 
+    if(confirm("Eliminare?")){ 
+        state.tokens[state.selection.currentSheetId].attacks.splice(ix, 1); 
+        renderAttacks(); 
+        triggerSync(state.selection.currentSheetId); 
+    } 
+}
+export function updateAttack(ix, k, v) { 
+    state.tokens[state.selection.currentSheetId].attacks[ix][k] = v; 
+    triggerSync(state.selection.currentSheetId); 
+}
+export function updateAttackCount(v) { 
+    state.tokens[state.selection.currentSheetId].attackCount = parseInt(v)||1; 
+    triggerSync(state.selection.currentSheetId); 
+}
 
 export function renderAttacks() {
     const c = document.getElementById('sheet-attacks-list'); 
@@ -84,7 +129,10 @@ export function renderAttacks() {
     });
 }
 
-export function rollAttackAction(type, formula, name) { alert(`TIRO DADO: ${name} (${type}) -> ${formula}`); }
+export function rollAttackAction(type, formula, name) { 
+    if(window.rollFormula) window.rollFormula(formula, `${name} (${type})`);
+    else alert(`TIRO: ${name} -> ${formula}`); 
+}
 
 // --- INVENTARIO ---
 export function openInventory(id) {
@@ -117,9 +165,7 @@ export function renderInventory() {
     
     d.inventory.forEach((item, ix) => {
         const row = document.createElement('div'); 
-        row.className = 'inv-row'; // USA SOLO LA CLASSE CSS
-        // RIMOSSO style.cssText che forzava i bordi
-        
+        row.className = 'inv-row'; 
         row.innerHTML = `
             <input class="inv-name" value="${item.n}" onchange="window.updateInv(${ix},'n',this.value)" placeholder="Nome Oggetto" style="flex: 1; background: transparent; border: none; color: #000; font-weight: bold; margin-right: 10px;">
             <div style="display: flex; align-items: center; gap: 5px;">
@@ -130,9 +176,24 @@ export function renderInventory() {
         c.appendChild(row);
     });
 }
-export function addInvRow(){ state.tokens[state.selection.currentInvId].inventory.push({n:"", q:1}); renderInventory(); }
-export function updateInv(ix, k, v){ state.tokens[state.selection.currentInvId].inventory[ix][k] = v; }
-export function removeInvRow(ix){ if(confirm("Eliminare?")){ state.tokens[state.selection.currentInvId].inventory.splice(ix,1); renderInventory(); } }
+
+// --- FUNZIONI INVENTARIO CON SYNC ---
+export function addInvRow(){ 
+    state.tokens[state.selection.currentInvId].inventory.push({n:"", q:1}); 
+    renderInventory(); 
+    triggerSync(state.selection.currentInvId); 
+}
+export function updateInv(ix, k, v){ 
+    state.tokens[state.selection.currentInvId].inventory[ix][k] = v; 
+    triggerSync(state.selection.currentInvId); 
+}
+export function removeInvRow(ix){ 
+    if(confirm("Eliminare?")){ 
+        state.tokens[state.selection.currentInvId].inventory.splice(ix,1); 
+        renderInventory(); 
+        triggerSync(state.selection.currentInvId); 
+    } 
+}
 
 // --- GRIMORIO ---
 export function openSpellManager(id) {
@@ -171,9 +232,7 @@ export function renderSpellSlots() {
         slotsHtml += `</div>`;
 
         const row = document.createElement('div');
-        row.className = 'spell-row'; // USA SOLO LA CLASSE CSS
-        // RIMOSSO style.cssText che forzava i bordi
-
+        row.className = 'spell-row';
         row.innerHTML = `
             <input class="spell-name" value="${s.name}" onchange="window.renSpell(${ix},this.value)" style="background: transparent; border: none; border-bottom: 1px solid #bdaea5; color: #000; font-weight: bold; width: 80px;">
             <div style="flex:1; display:flex; align-items:center;">${slotsHtml}</div>
@@ -186,11 +245,42 @@ export function renderSpellSlots() {
         c.appendChild(row);
     });
 }
-export function addSpellLevelRow(){const d=state.tokens[state.selection.currentSpellId];const n=d.spellSlots.length+1;d.spellSlots.push({level:n,name:`Liv. ${n}`,max:2,used:0});renderSpellSlots(); refreshTokenDisplay(state.selection.currentSpellId);}
-export function removeSpellLevel(ix){if(confirm("Eliminare?")){state.tokens[state.selection.currentSpellId].spellSlots.splice(ix,1);renderSpellSlots(); refreshTokenDisplay(state.selection.currentSpellId);}}
-export function togSpell(ix,i){const s=state.tokens[state.selection.currentSpellId].spellSlots[ix];s.used=(i<s.used?i:i+1);renderSpellSlots(); refreshTokenDisplay(state.selection.currentSpellId);}
-export function chMaxS(ix,d){const s=state.tokens[state.selection.currentSpellId].spellSlots[ix];s.max=Math.max(0,s.max+d);renderSpellSlots(); refreshTokenDisplay(state.selection.currentSpellId);}
-export function renSpell(ix,v){state.tokens[state.selection.currentSpellId].spellSlots[ix].name=v;}
+
+// --- FUNZIONI SPELL CON SYNC ---
+export function addSpellLevelRow(){
+    const d=state.tokens[state.selection.currentSpellId];
+    const n=d.spellSlots.length+1;
+    d.spellSlots.push({level:n,name:`Liv. ${n}`,max:2,used:0});
+    renderSpellSlots(); 
+    refreshTokenDisplay(state.selection.currentSpellId); 
+    triggerSync(state.selection.currentSpellId);
+}
+export function removeSpellLevel(ix){
+    if(confirm("Eliminare?")){
+        state.tokens[state.selection.currentSpellId].spellSlots.splice(ix,1);
+        renderSpellSlots(); 
+        refreshTokenDisplay(state.selection.currentSpellId); 
+        triggerSync(state.selection.currentSpellId);
+    }
+}
+export function togSpell(ix,i){
+    const s=state.tokens[state.selection.currentSpellId].spellSlots[ix];
+    s.used=(i<s.used?i:i+1);
+    renderSpellSlots(); 
+    refreshTokenDisplay(state.selection.currentSpellId); 
+    triggerSync(state.selection.currentSpellId);
+}
+export function chMaxS(ix,d){
+    const s=state.tokens[state.selection.currentSpellId].spellSlots[ix];
+    s.max=Math.max(0,s.max+d);
+    renderSpellSlots(); 
+    refreshTokenDisplay(state.selection.currentSpellId); 
+    triggerSync(state.selection.currentSpellId);
+}
+export function renSpell(ix,v){
+    state.tokens[state.selection.currentSpellId].spellSlots[ix].name=v; 
+    triggerSync(state.selection.currentSpellId);
+}
 
 function refreshTokenDisplay(id){ const t = document.getElementById(`tok-${id}`); if(t){ const b = t.querySelector('.spell-box'); if(b) updateSpellBoxDisplay(b, state.tokens[id]); } }
 
@@ -214,7 +304,6 @@ export function openStatusMenu(id) {
         const isActive = cur.includes(ic);
         const d = document.createElement('div');
         d.className = 'status-opt';
-        // Stile inline minimo per il layout griglia, i colori sono gestiti dalla logica toggle
         d.style.cssText = `cursor: pointer; width: 80px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; background-color: ${isActive ? 'rgba(146, 38, 16, 0.1)' : 'transparent'}; border: ${isActive ? '2px solid #922610' : '1px solid #bdaea5'}; opacity: ${isActive ? '1' : '0.7'};`;
         
         const textStyle = isActive ? 'color: #922610; font-weight: bold;' : 'color: #333; font-weight: normal;';
@@ -238,10 +327,15 @@ export function toggleStatus(id, ic, el) {
     }
     const tokenEl = document.getElementById(`tok-${id}`);
     updateStatusVisuals(tokenEl, d);
-    syncTokenToPlayer(id);
+    triggerSync(id);
 }
 
-export function updateSkillVal(key, val) { if(state.selection.currentSheetId) state.tokens[state.selection.currentSheetId].skills[key] = val; }
+export function updateSkillVal(key, val) { 
+    if(state.selection.currentSheetId) {
+        state.tokens[state.selection.currentSheetId].skills[key] = val; 
+        triggerSync(state.selection.currentSheetId); 
+    }
+}
 export function toggleSkillProf(key) {
     const id = state.selection.currentSheetId;
     if(!id) return;
@@ -249,8 +343,10 @@ export function toggleSkillProf(key) {
     d.skills[key + "-check"] = !d.skills[key + "-check"];
     d.skills[key] = ""; 
     openSheet(id);
+    triggerSync(id);
 }
 
+// EXPORT GLOBALE
 window.openSheet = openSheet;
 window.updateTokenData = updateTokenData;
 window.updateDetail = updateDetail;

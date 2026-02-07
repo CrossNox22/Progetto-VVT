@@ -97,3 +97,73 @@ body {
     border-bottom: 1px solid #444;
 }
 .p-init-val { color: #FF9800; font-weight: bold; margin-right: 10px; width: 25px;}
+
+/* --- FIX INIZIATIVA (Stile Pergamena Identico al Master) --- */
+
+#init-panel {
+    /* Posizionamento */
+    top: 80px !important; 
+    left: 20px !important;
+    width: 220px !important;
+    
+    /* Sovrascrittura Stile Dark (.ui-panel) */
+    background-color: #fdf1dc !important; /* Crema */
+    border: 3px solid #922610 !important; /* Rosso D&D */
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+    color: #333 !important;
+    padding: 10px !important;
+    font-family: 'Cinzel', serif;
+}
+
+/* Header Iniziativa */
+#init-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #922610;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    color: #922610;
+    font-weight: bold;
+    font-variant: small-caps;
+    font-size: 1.1em;
+}
+
+/* Stili specifici per le righe (se non caricati da panels.css) */
+.init-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #922610;
+    color: #333;
+}
+
+.init-row.active-turn {
+    background-color: rgba(146, 38, 16, 0.15) !important;
+    border-left: 5px solid #922610;
+}
+
+.init-val {
+    color: #922610;
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 20px;
+    font-size: 1.2em;
+}
+
+.init-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #922610;
+    margin-right: 8px;
+    object-fit: cover;
+    background: #000;
+}
+
+.init-name {
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+}

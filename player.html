@@ -4,44 +4,76 @@
     <meta charset="UTF-8">
     <title>Vista Player</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="assets/css/components/theme.css">
     <link rel="stylesheet" href="assets/css/components/token.css">
-    <link rel="stylesheet" href="assets/css/components/animations.css">   
-    <link rel="stylesheet" href="assets/css/base/player.css">   
+    <link rel="stylesheet" href="assets/css/components/animations.css">
+    <link rel="stylesheet" href="assets/css/components/modal.css">  <link rel="stylesheet" href="assets/css/components/panels.css"> <link rel="stylesheet" href="assets/css/components/dice.css">   <link rel="stylesheet" href="assets/css/base/player.css">
+    
     <link rel="shortcut icon" href="assets/media/img/cross-logo.ico" type="image/x-icon">
+
+    <style>
+        /* FIX DI SICUREZZA INTERNO */
+        /* Assicura che il layer meteo non blocchi mai i click sui token */
+        #weather-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none !important;
+            z-index: 50; /* Sopra la mappa, sotto i token */
+        }
+    </style>
 </head>
 <body>
     
     <div id="login-overlay">
         <div class="login-box">
-            <h1 style="color:#922610; margin-bottom: 20px;">Connessione Partita</h1>
+            <h1 style="color:#922610; margin-bottom: 20px; text-shadow: 0 0 5px rgba(0,0,0,0.5);">Connessione Partita</h1>
             <input type="text" id="host-id-input" placeholder="Inserisci ID Sessione" autocomplete="off" spellcheck="false">
             <button onclick="connectToGame()" class="primary">ENTRA</button>
-            <div id="status-msg">In attesa...</div>
+            <div id="status-msg" style="margin-top:15px; color:#aaa; font-style:italic;">In attesa...</div>
         </div>
     </div>
     
     <div id="game-area">
         <div id="world-layer">
             <img id="map-img" src="" class="map-layer">
-        </div>
+            </div>
         
         <div id="weather-layer" class=""></div>
     </div>
     
     <div id="ui-layer">
-        <div id="init-panel" class="ui-panel"></div>
+        <div id="init-panel" class="ui-panel" style="display:none;"></div>
         
-        <div id="inventory-panel" class="ui-panel">
+        <div id="inventory-panel" class="ui-panel" style="display:none;">
             <h3 id="inv-title">Zaino</h3>
             <div id="inv-list"></div>
         </div>
     </div>
     
+    <div id="sheet-modal" class="modal" style="display:none;">
+        <div class="modal-content statblock-card" style="position:relative;">
+            <div id="sheet-content"></div>
+            <div class="modal-footer">
+                <button class="primary" onclick="document.getElementById('sheet-modal').style.display='none'">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="inventory-modal" class="modal" style="display:none;">
+        <div class="modal-content statblock-card">
+            <h3 id="inv-title-modal" class="sb-title">Zaino</h3>
+            <div id="inv-list-container" class="inv-list-container" style="margin-top:15px;"></div>
+            <div class="modal-footer">
+                <button class="primary" onclick="document.getElementById('inventory-modal').style.display='none'">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="assets/js/modules/player-logic.js"></script>
 </body>
 </html>
