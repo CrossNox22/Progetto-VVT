@@ -100,7 +100,7 @@ window.addEventListener('wheel', e => {
     scale = Math.min(Math.max(0.1, scale + delta), 5); updateTransform();
 }, {passive: false});
 
-// --- GENERAZIONE TOKEN ---
+// --- GENERAZIONE TOKEN (CSS CLEANUP) ---
 function spawnToken(d) {
     const old = document.getElementById(`tok-${d.id}`);
     if(old) old.remove();
@@ -112,41 +112,50 @@ function spawnToken(d) {
     el.style.left = d.x + 'px'; el.style.top = d.y + 'px'; el.style.zIndex = d.z;
     if (d.scale) el.style.transform = `scale(${d.scale})`;
 
-    const controlsDiv = document.createElement('div');
+    // --- CONTROLLI SINISTRA (Scheda/Zaino) ---
     if (!d.isEnemy) {
-        controlsDiv.className = 'controls-left';
-        controlsDiv.style.cssText = "opacity:0; transition:opacity 0.2s; pointer-events: auto; display:flex; flex-direction:column-reverse; gap:4px; z-index: 9999;";
+        const cLeft = document.createElement('div');
+        cLeft.className = 'p-controls-left'; // Nuova classe CSS
         
-        const btnSheet = document.createElement('div');
-        btnSheet.className = 'mini-btn';
-        btnSheet.textContent = '📜';
-        btnSheet.title = "Apri Scheda";
-        btnSheet.style.cursor = "pointer";
-        btnSheet.onmousedown = (e) => e.stopPropagation(); 
-        btnSheet.onclick = (e) => { e.stopPropagation(); e.preventDefault(); openPlayerSheet(d.id); };
+        const mkBtn = (icon, title, fn) => {
+            const b = document.createElement('div');
+            b.className = 'p-mini-btn'; // Nuova classe CSS
+            b.textContent = icon;
+            b.title = title;
+            b.onmousedown = e => e.stopPropagation();
+            b.onclick = e => { e.stopPropagation(); fn(d.id); };
+            return b;
+        };
 
-        const btnInv = document.createElement('div');
-        btnInv.className = 'mini-btn';
-        btnInv.textContent = '🎒';
-        btnInv.title = "Apri Zaino";
-        btnInv.style.cursor = "pointer";
-        btnInv.onmousedown = (e) => e.stopPropagation(); 
-        btnInv.onclick = (e) => { e.stopPropagation(); e.preventDefault(); openPlayerInventory(d.id); };
-
-        controlsDiv.appendChild(btnSheet);
-        controlsDiv.appendChild(btnInv);
-        
-        el.onmouseenter = () => { controlsDiv.style.opacity = 1; };
-        el.onmouseleave = () => { controlsDiv.style.opacity = 0; };
+        cLeft.appendChild(mkBtn('📜', 'Scheda', openPlayerSheet));
+        cLeft.appendChild(mkBtn('🎒', 'Zaino', openPlayerInventory));
+        el.appendChild(cLeft);
     }
 
+    // --- CONTROLLI DESTRA (Spada) ---
+    if (!d.isEnemy && d.attacks && d.attacks.length > 0) {
+        const cRight = document.createElement('div');
+        cRight.className = 'p-controls-right'; // Nuova classe CSS
+
+        const btnAtk = document.createElement('div');
+        btnAtk.className = 'p-mini-btn'; // Nuova classe CSS
+        btnAtk.textContent = '⚔️';
+        btnAtk.title = "Attacchi Rapidi";
+        
+        btnAtk.onmousedown = e => e.stopPropagation();
+        btnAtk.onclick = e => { e.stopPropagation(); toggleQuickAttacks(d.id, el); };
+
+        cRight.appendChild(btnAtk);
+        el.appendChild(cRight);
+    }
+
+    // --- GRAFICA TOKEN ---
     let statsHtml = '';
-    const showStats = (!d.isEnemy || d.statsVisible);
-    if(showStats) {
-        statsHtml += `<div class="stat-box ac-box">${d.ac}</div>`;
+    if(!d.isEnemy || d.statsVisible) {
+        statsHtml += `<div class="stat-box ac-box" style="background:#2196F3; border:2px solid white; color:white;">${d.ac}</div>`;
         if(!d.isEnemy && d.spellSlots) {
             let avail = 0; d.spellSlots.forEach(s => { avail += (s.max - s.used); });
-            if(avail > 0) statsHtml += `<div class="stat-box spell-box">${avail}</div>`;
+            if(avail > 0) statsHtml += `<div class="stat-box spell-box" style="background:#9C27B0; border:2px solid white; color:white;">${avail}</div>`;
         }
     }
 
@@ -156,24 +165,24 @@ function spawnToken(d) {
     const pct = Math.max(0, Math.min(100, (d.hpCurrent / d.hpMax) * 100));
     const hpColor = pct > 50 ? "#4CAF50" : (pct > 25 ? "#FFC107" : "#F44336");
 
-    el.innerHTML = `
-        <div class="stats-row">${statsHtml}</div>
+    const contentHtml = `
+        <div class="stats-row" style="display:flex; justify-content:space-between; width:100%; position:relative; top:10px; z-index:110;">${statsHtml}</div>
         <div class="token-drag-area">
-            <div class="token-name">${d.name}</div>
-            <img src="${d.image}" class="token-img">
+            <div class="token-name" style="background:rgba(0,0,0,0.8); color:white; padding:2px; border-radius:4px; font-size:11px; text-align:center;">${d.name}</div>
+            <img src="${d.image}" class="token-img" style="width:100%; border-radius:5px; display:block;">
         </div>
         <div class="status-overlay">${statusHtml}</div>
-        <div class="hp-bar-container">
-            <div class="hp-bar-fill" style="width:${pct}%; background-color:${hpColor};"></div>
-            <div class="hp-text">${d.hpCurrent}/${d.hpMax}</div>
+        
+        <div class="p-hp-container">
+            <div class="p-hp-fill" style="width:${pct}%; background-color:${hpColor};"></div>
+            <div class="p-hp-text">${d.hpCurrent}/${d.hpMax}</div>
         </div>
     `;
-
-    if (!d.isEnemy) el.appendChild(controlsDiv);
+    
+    el.insertAdjacentHTML('beforeend', contentHtml);
     document.getElementById('world-layer').appendChild(el);
     if(!d.isEnemy) enableDrag(el, d.id);
 }
-
 function spawnProp(d) {
     const old = document.getElementById(`prop-${d.id}`);
     if(old) old.remove();
@@ -186,10 +195,16 @@ function spawnProp(d) {
     enableDrag(el, d.id);
 }
 
-// --- LOGICA DRAG ---
+// --- LOGICA DRAG (FIX CLASSI CSS) ---
 function enableDrag(el, id) {
     el.addEventListener('mousedown', (e) => {
-        if(e.target.closest('.mini-btn') || e.target.classList.contains('mini-btn')) return;
+        // Se clicco su un bottone, non trascinare (Usa la NUOVA classe .p-mini-btn)
+        if(e.target.closest('.p-mini-btn') || e.target.classList.contains('p-mini-btn')) return;
+        
+        // --- FIX: Usa la NUOVA classe .p-quick-panel ---
+        document.querySelectorAll('.p-quick-panel').forEach(p => p.remove());
+        // ------------------------------------------------
+
         e.stopPropagation();
         dragItem = el;
         el.style.transition = "none";
@@ -378,3 +393,150 @@ setTimeout(() => {
         }
     });
 }, 500);
+
+/* --- AGGIUNTA ATTACCHI RAPIDI --- */
+
+/* --- FUNZIONE ATTACCHI RAPIDI (FIX PROPAGAZIONE) --- */
+function toggleQuickAttacks(id, tokenEl) {
+    // Chiudi se già aperto
+    let existing = tokenEl.querySelector('.p-quick-panel');
+    if (existing) { existing.remove(); return; }
+    
+    // Chiudi altri pannelli
+    document.querySelectorAll('.p-quick-panel').forEach(p => p.remove());
+
+    const d = localTokens[String(id)];
+    if (!d || !d.attacks || d.attacks.length === 0) return;
+
+    const panel = document.createElement('div');
+    panel.className = 'p-quick-panel'; // Usa la classe corretta del CSS
+    
+    panel.innerHTML = `<div class="p-qa-header">Attacchi Rapidi</div>`;
+
+    d.attacks.forEach(atk => {
+        const row = document.createElement('div');
+        row.className = 'p-qa-row';
+        
+        row.innerHTML = `
+            <div class="p-qa-name">${atk.name}</div>
+            <div class="p-qa-actions">
+                <div class="p-qa-btn hit">TxC ${atk.hit}</div>
+                <div class="p-qa-btn dmg">${atk.dmg}</div>
+            </div>
+        `;
+
+        // --- FIX CRITICO QUI SOTTO ---
+        // Usiamo 'onmousedown' invece di 'onclick' per battere sul tempo la chiusura globale
+        // e usiamo stopPropagation() per impedire al listener globale di scattare.
+
+        const btnHit = row.querySelector('.hit');
+        btnHit.onmousedown = (e) => { 
+            e.stopPropagation(); // Ferma l'evento qui! Non farlo arrivare alla finestra
+            e.preventDefault();  // Evita selezioni di testo indesiderate
+            rollPlayerAttack('hit', atk.hit, atk.name); 
+        };
+
+        const btnDmg = row.querySelector('.dmg');
+        btnDmg.onmousedown = (e) => { 
+            e.stopPropagation(); // Ferma l'evento qui!
+            e.preventDefault();
+            rollPlayerAttack('dmg', atk.dmg, atk.name); 
+        };
+        // -----------------------------
+
+        panel.appendChild(row);
+    });
+    
+    // Ferma la propagazione anche se clicchi sullo sfondo del pannello (per non chiuderlo se sbagli mira)
+    panel.onmousedown = (e) => e.stopPropagation();
+
+    tokenEl.appendChild(panel);
+}
+
+// Funzione che calcola il tiro e lo invia
+function rollPlayerAttack(type, formula, name) {
+    let result = 0;
+    let details = "";
+    
+    try {
+        if (type === 'hit') {
+            // Tiro per Colpire (d20 + bonus)
+            const bonus = parseInt(formula) || 0;
+            const d20 = Math.floor(Math.random() * 20) + 1;
+            result = d20 + bonus;
+            details = `d20 (${d20}) ${bonus >= 0 ? '+' : ''}${bonus}`;
+            if (d20 === 20) details += " CRIT!";
+            if (d20 === 1) details += " FAIL!";
+        } else {
+            // Tiro Danni (es. 1d8+3)
+            // Divide la stringa in dadi e bonus (es "1d8" e "3")
+            const parts = formula.toLowerCase().split('+');
+            const dicePart = parts[0].trim(); // "1d8"
+            const mod = parts[1] ? parseInt(parts[1]) : 0; // 3
+            
+            if (dicePart.includes('d')) {
+                const [numStr, facesStr] = dicePart.split('d');
+                const num = parseInt(numStr) || 1;
+                const faces = parseInt(facesStr);
+                let totalDice = 0;
+                let rolls = [];
+                for(let i=0; i<num; i++) {
+                    let r = Math.floor(Math.random() * faces) + 1;
+                    totalDice += r;
+                    rolls.push(r);
+                }
+                result = totalDice + mod;
+                details = `[${rolls.join('+')}] ${mod ? '+'+mod : ''}`;
+            } else {
+                result = parseInt(dicePart) + mod; // Danno fisso
+                details = "Danno fisso";
+            }
+        }
+
+        // 1. Mostra a te stesso (usa la funzione importata da dice.js)
+        // Nota: Assicurati che 'showRemoteResult' sia importato in alto
+        import('./dice.js').then(m => m.showRemoteResult("Tu", result, `${name} (${type})`));
+
+        // 2. Invia al Master
+        if(conn && conn.open) {
+            conn.send({
+                type: 'ROLL_NOTIFY',
+                payload: {
+                    name: `Giocatore (${name})`,
+                    roll: result,
+                    die: type === 'hit' ? 'Tiro per Colpire' : 'Danni'
+                }
+            });
+        }
+
+    } catch(e) {
+        console.error("Errore tiro:", e);
+    }
+}
+
+/* --- GESTIONE CHIUSURA MENU E MODALI AL CLICK FUORI (FIX CLASSI) --- */
+window.addEventListener('mousedown', (e) => {
+    
+    // 1. GESTIONE MENU ATTACCHI (Spada)
+    // FIX: Usiamo le classi corrette (.p-quick-panel e .p-mini-btn)
+    const isPanel = e.target.closest('.p-quick-panel');
+    const isBtn = e.target.closest('.p-mini-btn');
+
+    if (!isPanel && !isBtn) {
+        document.querySelectorAll('.p-quick-panel').forEach(p => p.remove());
+    }
+
+    // 2. GESTIONE MODALI (Scheda/Zaino)
+    // Queste usano ancora le classi standard (.dnd-modal), quindi sono OK
+    const sheetModal = document.getElementById('sheet-modal');
+    const invModal = document.getElementById('inventory-modal');
+
+    // Se clicco esattamente sullo sfondo scuro (overlay), chiudo la modale
+    if (sheetModal && e.target === sheetModal) {
+        sheetModal.style.display = 'none';
+    }
+    
+    if (invModal && e.target === invModal) {
+        invModal.style.display = 'none';
+    }
+});

@@ -167,3 +167,171 @@ body {
     font-size: 14px;
     text-transform: uppercase;
 }
+
+/* --- PLAYER TOKEN CONTROLS (Sostituiscono gli stili inline JS) --- */
+
+/* Contenitori laterali */
+.p-controls-left {
+    position: absolute;
+    left: -32px;
+    bottom: 15px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 5px;
+    z-index: 120;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: auto;
+}
+
+.p-controls-right {
+    position: absolute;
+    right: -32px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 120;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: auto;
+}
+
+/* Bottone stile "Master" (Beige & Rosso) */
+.p-mini-btn {
+    width: 24px;
+    height: 24px;
+    background-color: #F4E4BC;
+    border: 1px solid #922610;
+    color: #922610;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    transition: transform 0.1s, background-color 0.1s;
+}
+
+.p-mini-btn:hover {
+    background-color: #EADCC1;
+    transform: scale(1.1);
+}
+
+.p-mini-btn:active {
+    transform: scale(0.95);
+}
+
+/* Mostra controlli all'hover sul token */
+.token-container:hover .p-controls-left,
+.token-container:hover .p-controls-right {
+    opacity: 1;
+}
+
+/* --- BARRA HP PLAYER (Migliorata) --- */
+.p-hp-container {
+    width: 100%;
+    height: 14px;
+    background-color: #333;
+    border: 1px solid white;
+    margin-top: 2px;
+    position: relative;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.p-hp-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.p-hp-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #000;
+    pointer-events: none;
+    font-family: sans-serif;
+}
+
+/* --- PANNELLO ATTACCHI RAPIDI --- */
+.p-quick-panel {
+    position: absolute;
+    left: 110%;
+    top: 0;
+    background: #f4e4bc;
+    border: 2px solid #922610;
+    padding: 5px;
+    width: 180px;
+    z-index: 150;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-family: 'Cinzel', serif;
+}
+
+.p-qa-header {
+    font-weight: bold;
+    color: #922610;
+    border-bottom: 1px solid #922610;
+    margin-bottom: 5px;
+    font-variant: small-caps;
+    font-size: 12px;
+    text-align: center;
+}
+
+.p-qa-row {
+    border-bottom: 1px dotted #bdaea5;
+    padding-bottom: 4px;
+}
+
+.p-qa-name {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 3px;
+    color: #333;
+}
+
+.p-qa-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.p-qa-btn {
+    flex: 1;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 2px 0;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.p-qa-btn.hit {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border-color: #2E7D32;
+}
+
+.p-qa-btn.hit:hover { background: #C8E6C9; }
+
+.p-qa-btn.dmg {
+    background: #FFEBEE;
+    color: #C62828;
+    border-color: #C62828;
+}
+
+.p-qa-btn.dmg:hover { background: #FFCDD2; }
