@@ -9,18 +9,19 @@ export const state = {
         logPanel: null,
         creationModal: null
     },
-
+    
     // Variabili Mappa
     map: {
-        scale: 1,
         x: 0,
         y: 0,
+        scale: 1,
+        initialScale: 1, // 🔥 NUOVO
         isPanning: false,
         panStartX: 0,
-        panStartY: 0,
-        highestZ: 100
-    },
-
+        panStartY: 0
+    }
+    ,
+    
     // Variabili Tempo & Ambiente
     time: {
         minutes: 480, // 08:00
@@ -29,7 +30,7 @@ export const state = {
         year: 1,
         currentWeather: ''
     },
-
+    
     // Dati di Gioco
     tokens: {},       // Database dei token attivi
     props: {},        // Database degli oggetti scenici
@@ -37,7 +38,7 @@ export const state = {
     
     // Riferimento alla Finestra Giocatori
     playerWin: null,
-
+    
     // ID temporanei per le modali aperte
     selection: {
         currentSheetId: null,
@@ -48,7 +49,7 @@ export const state = {
         creationType: 'hero',
         pendingImg: ""
     },
-
+    
     // Costanti
     constants: {
         statusIcons: { 

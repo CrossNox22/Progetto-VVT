@@ -16,78 +16,65 @@
 <body>
     <div id="start-screen">
         <div class="start-content">
-            <h1 style="color: #922610; font-size: 60px; margin-bottom: 15px; text-shadow: 0 0 20px #C8102E;">
+            <h1 style="color: #922610; font-size: 60px; margin-bottom: 15px; text-shadow: 0 0 20px #c8102fa4;">
                 PIERO DM CONSOLE
             </h1>
-            <img src="/assets/media/img/cross-logo.png" alt="" style="width: 150px; margin-bottom: 15px; border: #450c01 2px solid;">
-            <p style="color: #aaa; margin-bottom: 30px; font-style: italic;">La suite definitiva per i Dungeon Master</p>
+            
+            <img src="/assets/media/img/cross-logo.png" alt="" style="width: 150px; margin-bottom: 15px; border: #450c01 2.5px solid;">
+            
+            <p style="color: #aaa; margin-bottom: 25px; font-style: italic;">La suite definitiva per i Dungeon Master</p>
             
             <div class="start-buttons">
                 <button class="primary big-btn" onclick="startNewSession()">🗺️ NUOVA SESSIONE</button>
                 <button class="load-session big-btn" onclick="document.getElementById('upload-session').click()">📂 CARICA SESSIONE</button>
             </div>
-            
-            <div style="margin-top: 30px; font-size: 12px; color: #555;">v2.1 - Merged Stable</div>
         </div>
-    </div>
-    
-    <div id="dice-overlay" style="display:none">
-        <div id="anim-die">20</div>
     </div>
     
     <div id="toolbar">
         <img src="/assets/media/img/cross-logo.png" alt="" style="width: 40px; margin-bottom: 8px;border-radius: 100%; margin-top: 5px; border: #761401 2.5px solid;">
-        <strong class="desktop-title">DM CONSOLE</strong>
         
+        <h5>
+            <strong class="desktop-title">CROSS CONSOLE</strong>
+        </h5>
         
-        <div class="toolbar-group desktop-buttons">
+        <div class="toolbar-group desktop-buttons" style="padding-right: 25px;">
             <button class="primary" onclick="window.startHost()">📡 ONLINE</button>
-            <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
+            <button onclick="document.getElementById('upload-map').click()">📂 Map</button>
             
             <div class="submenu-wrapper">
                 <button onclick="toggleTokenMenu()">♟️ Token ▼</button>
                 
                 <div id="token-submenu" class="submenu-dropdown">
                     <button class="submenu-item" onclick="document.getElementById('upload-token').click(); toggleTokenMenu()">
-                        📂 Importa File
+                        📂 Import File
                     </button>
                     
                     <button class="submenu-item" onclick="openCreationModal('hero'); toggleTokenMenu()">
-                        🛠️ Crea Manuale
+                        🛠️ Create Token
                     </button>
                     
                 </div>
             </div>
             <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
             
-            <button onclick="toggleClock()">🕰️ Orologio</button>
-            <button onclick="toggleMusic()">🎵 Musica</button>
-            <button onclick="toggleWeather()">⛈️ Meteo</button>
-            
-            <button class="save-session" onclick="downloadSession()">💾 SALVA</button>
-        </div>
-        
-        <div class="search-container">
-            <button class="main-button" onclick="toggleMenu()">🔍</button>
-            
-            <div id="zoomMenu" class="dropdown-content">
-                <button onclick="changeZoom(0.1)">➕ Ingrandisci</button>
-                <button onclick="changeZoom(-0.1)">➖ Rimpicciolisci</button>
-                <button onclick="resetView()">🔄 Reset</button>
-            </div>
+            <button onclick="toggleClock()">🕰️ Clock</button>
+            <button onclick="toggleMusic()">🎵 Music</button>
+            <button onclick="toggleWeather()">⛈️ Meteo</button>            
+            <button class="save-session" onclick="downloadSession()">💾 Save</button>
         </div>
         
         <div class="mobile-menu">
             <button id="burger-btn">&#9776;</button>
             <div class="burger-dropdown">
-                <button onclick="openPlayerWindow()">📺 PLAYER</button>
-                <button onclick="document.getElementById('upload-map').click()">📂 Mappa</button>
+                <button onclick="openPlayerWindow()">📺 ONLINE</button>
+                <button onclick="document.getElementById('upload-map').click()">📂 Map</button>
                 <button onclick="document.getElementById('upload-token').click()">♟️ Token (Importa)</button>
                 <button onclick="document.getElementById('upload-prop').click()">🖼️ Prop</button>
-                <button onclick="toggleClock()">🕰️ Orologio</button>
-                <button onclick="toggleMusic()">🎵 Musica</button>
+                <button onclick="toggleClock()">🕰️ Clock</button>
+                <button onclick="toggleMusic()">🎵 Music</button>
                 <button onclick="toggleWeather()">⛈️ Meteo</button>
-                <button class="save-session" onclick="downloadSession()">💾 SALVA</button>
+                <button class="save-session" onclick="downloadSession()">💾 Save</button>
             </div>
         </div>
     </div>

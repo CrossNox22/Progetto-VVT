@@ -9,7 +9,7 @@ export function changeZoom(delta) {
 }
 
 export function resetView() {
-    state.map.scale = 1;
+    state.map.scale = state.map.initialScale ?? 1;
     state.map.x = 0;
     state.map.y = 0;
     updateWorldTransform();

@@ -69,6 +69,7 @@
     align-items: center; justify-content: center;
     pointer-events: none;
 }
+
 #anim-die {
     width: 150px; height: 150px;
     background: #FF9800; color: #000;
