@@ -1,11 +1,9 @@
 /* assets/js/modules/toolbar.js - GESTIONE UI BARRA STRUMENTI */
-
-// Gestisce l'apertura/chiusura del menu a tendina Token
 export function toggleTokenMenu() {
     const menu = document.getElementById('token-submenu');
     if (menu) {
         const isVisible = menu.style.display === 'block';
-        closeAllDropdowns(); // Chiudi altri eventuali menu aperti
+        closeAllDropdowns(); 
         menu.style.display = isVisible ? 'none' : 'block';
     }
 }
@@ -55,7 +53,6 @@ export function initToolbarEvents() {
     // 2. Listener Burger Menu (Mobile)
     const burger = document.getElementById('burger-btn');
     if (burger) {
-        // Rimuoviamo vecchi listener per sicurezza
         const newBurger = burger.cloneNode(true);
         burger.parentNode.replaceChild(newBurger, burger);
         newBurger.addEventListener('click', toggleMobileMenu);
