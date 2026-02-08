@@ -7,7 +7,8 @@ import * as tokens from './tokens.js';
 import * as modals from './modals.js';
 import * as player from './player.js';
 import * as dice from './dice.js'; 
-import * as session from './session.js'; // Il nuovo modulo creato sopra
+import * as session from './session.js'; 
+import * as toolbar from './toolbar.js';
 
 // --- 1. ESPOSIZIONE GLOBALE (Window) ---
 export function exposeGlobals() {
@@ -50,6 +51,14 @@ export function exposeGlobals() {
     window.nextTurn = tokens.nextTurn;
     window.clearInitiative = tokens.clearInitiative;
     window.toggleQuickAttacks = tokens.toggleQuickAttacks;
+
+    // *** FIX MENU TOKEN ***
+    window.toggleTokenMenu = toolbar.toggleTokenMenu;      
+    window.switchCreationType = tokens.switchCreationType; // Serve per la modale
+    window.previewTokenImage = tokens.previewTokenImage;   // Serve per upload img
+    window.openCreationModal = tokens.openCreationModal;   // Serve per aprire la modale
+    window.submitTokenCreation = tokens.submitTokenCreation; // Serve per il tasto "Genera"
+    // **********************
     
     // Modali
     window.openSheet = modals.openSheet;
@@ -154,14 +163,30 @@ export function setupEventListeners() {
         n.addEventListener('change', (e) => tokens.handlePropUpload(e.target.files[0]));
     }
 
-    // Chiusura Menu al Click Fuori
+    // Chiusura Menu e Modali al Click Fuori
     window.addEventListener('mousedown', (e) => {
-        if (!e.target.closest('.floating-panel') && !e.target.closest('button')) {
+        
+        // 1. GESTIONE TOOLBAR E PANNELLI FLUTTUANTI
+        if (!e.target.closest('.floating-panel') && !e.target.closest('button') && !e.target.closest('.submenu-dropdown')) {
             window.closeAllMenus();
         }
+
+        // 2. GESTIONE ATTACCHI RAPIDI
         if (!e.target.closest('.quick-attack-panel') && !e.target.closest('.btn-quick-atk')) {
             document.querySelectorAll('.quick-attack-panel').forEach(p => p.remove());
         }
+
+        // 3. GESTIONE MODALI (Inventario, Scheda, ecc.)
+        // Lista degli ID delle finestre che vuoi chiudere cliccando fuori
+        const modalIds = ['inventory-modal', 'sheet-modal', 'spell-modal', 'status-modal', 'notes-modal', 'creation-modal'];
+        
+        modalIds.forEach(id => {
+            const modal = document.getElementById(id);
+            // Se la modale esiste ED è visibile E il click è avvenuto esattamente sullo sfondo (non sul contenuto)
+            if (modal && modal.style.display !== 'none' && e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
     });
 
     document.body.classList.remove('loading');

@@ -8,24 +8,46 @@ import { renderSheetHTML } from './character-sheet.js';
 export function openSheet(id) {
     state.selection.currentSheetId = id; 
     const d = state.tokens[id];
+    const modal = document.getElementById('sheet-modal');
+    if(!modal) return;
     
-    // Inizializzazioni
+    // Inizializzazioni dati (Safety check)
     if(!d.details) d.details = { type: "Umanoide", acType: "" };
     if(!d.traits) d.traits = [];
     if(!d.stats) d.stats = { str:10, dex:10, con:10, int:10, wis:10, cha:10 };
     if(!d.skills) d.skills = {};
     if(!d.save_bonuses) d.save_bonuses = {};
+    if ((!d.attacks || d.attacks.length === 0) && d.actions) { d.attacks = []; }
 
-    if ((!d.attacks || d.attacks.length === 0) && d.actions) {
-        d.attacks = []; 
-    }
-
+    // Genera l'HTML della scheda
     const html = renderSheetHTML(d);
-    document.getElementById('sheet-content').innerHTML = html;
     
+    // --- FIX GRAFICO ---
+    const contentBox = modal.querySelector('.modal-content');
+    contentBox.style.backgroundColor = "transparent";
+    contentBox.style.boxShadow = "none";
+    contentBox.style.border = "none";
+    contentBox.style.padding = "0";
+    
+    // Ricostruiamo la struttura per includere il footer dentro la pergamena
+    contentBox.innerHTML = `
+        <div class="statblock-card" style="margin: 0 auto; width: 100%; max-width: 500px; max-height: 85vh; display: flex; flex-direction: column;">
+            
+            <div id="sheet-content" style="overflow-y: auto; padding-right: 5px;">
+                ${html}
+            </div>
+            
+            <div class="modal-footer" style="border-top: 1px solid #922610; margin-top: 10px; padding-top: 10px;">
+                <button class="primary" onclick="document.getElementById('sheet-modal').style.display='none'">Chiudi</button>
+            </div>
+        </div>
+    `;
+    // -------------------
+
+    // Riattacchiamo gli eventi e renderizziamo le liste dinamiche
     renderAttacks();
     renderTraits(); 
-    document.getElementById('sheet-modal').style.display = 'flex';
+    modal.style.display = 'flex';
 }
 
 // --- SYNC HELPER ---
@@ -141,12 +163,31 @@ export function openInventory(id) {
     const modal = document.getElementById('inventory-modal');
     if(!modal) return;
 
-    modal.querySelector('.modal-content').innerHTML = `
-        <div class="statblock-card">
-            <div class="sb-header"><span class="sb-title">Zaino</span><span class="sb-subtitle" style="font-weight:bold; margin-left:10px;">${d.name}</span></div>
+    // --- FIX TOTALE (Grafico + Click) ---
+    const contentBox = modal.querySelector('.modal-content');
+    
+    // 1. Rimuovi scatola bianca
+    contentBox.style.backgroundColor = "transparent"; 
+    contentBox.style.boxShadow = "none";              
+    contentBox.style.border = "none";                 
+    contentBox.style.padding = "0";
+    
+    // 2. FIX CLICK: Rendi il box trasparente "impermeabile" ai click
+    // Così se clicchi fuori dalla pergamena, il click passa allo sfondo e chiude la finestra.
+    contentBox.style.pointerEvents = "none";
+
+    contentBox.innerHTML = `
+        <div class="statblock-card" style="margin: 0 auto; width: 100%; max-width: 500px; pointer-events: auto;">
+            <div class="sb-header">
+                <span class="sb-title">Zaino</span>
+                <span class="sb-subtitle" style="font-weight:bold; margin-left:10px;">${d.name}</span>
+            </div>
+            
             <div id="inv-list-container" class="inv-list-container" style="min-height:100px; max-height:300px; overflow-y:auto; margin-top:10px;"></div>
+            
             <button class="mini-btn" style="width:100%; margin-top:10px;" onclick="window.addInvRow()">+ Aggiungi Oggetto</button>
-            <div class="modal-footer">
+            
+            <div class="modal-footer" style="border-top: 1px solid #922610; margin-top: 15px; padding-top: 10px;">
                 <button class="primary" onclick="window.closeInventory()">Chiudi</button>
             </div>
         </div>
@@ -202,12 +243,26 @@ export function openSpellManager(id) {
     const modal = document.getElementById('spell-modal');
     if(!modal) return;
 
-    modal.querySelector('.modal-content').innerHTML = `
-        <div class="statblock-card">
-            <div class="sb-header"><span class="sb-title">Grimorio</span><span class="sb-subtitle" style="font-weight:bold; margin-left:10px;">${d.name}</span></div>
-            <div id="spell-list-container" class="inv-list-container" style="min-height:100px; max-height:400px; overflow-y:auto;"></div>
+    // --- FIX GRAFICO: Rimuoviamo scatola bianca ---
+    const contentBox = modal.querySelector('.modal-content');
+    contentBox.style.backgroundColor = "transparent";
+    contentBox.style.boxShadow = "none";
+    contentBox.style.border = "none";
+    contentBox.style.padding = "0";
+    // ---------------------------------------------
+
+    contentBox.innerHTML = `
+        <div class="statblock-card" style="margin: 0 auto; width: 100%; max-width: 500px;">
+            <div class="sb-header">
+                <span class="sb-title">Grimorio</span>
+                <span class="sb-subtitle" style="font-weight:bold; margin-left:10px;">${d.name}</span>
+            </div>
+            
+            <div id="spell-list-container" class="inv-list-container" style="min-height:100px; max-height:400px; overflow-y:auto; margin-top:10px;"></div>
+            
             <button class="mini-btn" style="width:100%; margin-top:10px;" onclick="window.addSpellLevelRow()">+ Aggiungi Livello</button>
-            <div class="modal-footer">
+            
+            <div class="modal-footer" style="border-top: 1px solid #922610; margin-top: 15px; padding-top: 10px;">
                 <button class="primary" onclick="window.closeSpellManager()">Chiudi</button>
             </div>
         </div>
@@ -215,6 +270,7 @@ export function openSpellManager(id) {
     renderSpellSlots();
     modal.style.display = 'flex';
 }
+
 export function closeSpellManager() { document.getElementById('spell-modal').style.display = 'none'; }
 
 export function renderSpellSlots() {
